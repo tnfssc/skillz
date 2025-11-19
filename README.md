@@ -1,4 +1,4 @@
-# 🎉 Skillz.hot - Package Manager for Claude Skills
+# 🎉 skillz.lat - Package Manager for Claude Skills
 
 A modern, full-stack package manager for discovering, sharing, and managing Claude MCP skills. Built with Go CLI, Cloudflare Workers, and edge-native architecture.
 

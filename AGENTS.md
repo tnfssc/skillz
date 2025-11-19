@@ -1,10 +1,10 @@
-# AGENTS.md - LLM Guide to Skillz.hot Codebase
+# AGENTS.md - LLM Guide to skillz.lat Codebase
 
-This document provides guidance for AI agents (LLMs) working with the Skillz.hot codebase. It explains the architecture, conventions, and best practices to help you navigate and contribute effectively.
+This document provides guidance for AI agents (LLMs) working with the skillz.lat codebase. It explains the architecture, conventions, and best practices to help you navigate and contribute effectively.
 
 ## 📐 Architecture Overview
 
-Skillz.hot is a **monorepo** organized as three main components:
+skillz.lat is a **monorepo** organized as three main components:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
