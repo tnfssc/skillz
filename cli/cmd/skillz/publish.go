@@ -24,10 +24,10 @@ func init() {
 }
 
 func runPublish(cmd *cobra.Command, args []string) error {
-	// Check for skillz.yaml
-	manifestPath := "skillz.yaml"
+	// Check for skillz.toon
+	manifestPath := "skillz.toon"
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
-		return fmt.Errorf("skillz.yaml not found. Run 'skillz init' first")
+		return fmt.Errorf("skillz.toon not found. Run 'skillz init' first")
 	}
 
 	// Parse manifest to get name and version

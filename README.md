@@ -392,14 +392,6 @@ cd cli/e2e && go test -v
 - [ ] Dependency vulnerability scanning
 - [ ] Analytics dashboard
 
-## 🤝 Contributing
-
-See [AGENTS.md](./AGENTS.md) for guidance on working with this codebase.
-
-## 📄 License
-
-MIT
-
 ---
 
 **Built with ❤️ using Cloudflare's edge platform**

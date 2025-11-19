@@ -2,19 +2,20 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/spf13/cobra"
 	"github.com/tnfssc/skillz/cli/internal/config"
 	"github.com/tnfssc/skillz/cli/internal/installer"
 	"github.com/tnfssc/skillz/cli/internal/lockfile"
 	"github.com/tnfssc/skillz/cli/internal/parser"
 	"github.com/tnfssc/skillz/cli/internal/registry"
 	"github.com/tnfssc/skillz/cli/internal/resolver"
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -50,7 +51,7 @@ func main() {
 func initCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
-		Short: "Initialize a new skillz.yaml file",
+		Short: "Initialize a new skillz.toon file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runInit()
 		},
@@ -74,7 +75,7 @@ func addCmd() *cobra.Command {
 func installCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "install",
-		Short: "Install all dependencies from skillz.yaml",
+		Short: "Install all dependencies from skillz.toon",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runInstall()
 		},
@@ -141,11 +142,11 @@ func infoCmd() *cobra.Command {
 // Command implementations
 
 func runInit() error {
-	manifestPath := "skillz.yaml"
+	manifestPath := "skillz.toon"
 
-	// Check if skillz.yaml already exists
+	// Check if skillz.toon already exists
 	if _, err := os.Stat(manifestPath); err == nil {
-		return fmt.Errorf("skillz.yaml already exists")
+		return fmt.Errorf("skillz.toon already exists")
 	}
 
 	fmt.Println("✨ Initializing new skillz project...")
@@ -207,7 +208,7 @@ func runInit() error {
 
 	// Write manifest
 	if err := parser.WriteManifest(manifestPath, manifest); err != nil {
-		return fmt.Errorf("failed to create skillz.yaml: %w", err)
+		return fmt.Errorf("failed to create skillz.toon: %w", err)
 	}
 
 	// Create SKILL.md template if it doesn't exist
@@ -237,7 +238,7 @@ func runInit() error {
 		}
 	}
 
-	fmt.Printf("\n✅ Created skillz.yaml and %s\n", main)
+	fmt.Printf("\n✅ Created skillz.toon and %s\n", main)
 	fmt.Println("\nNext steps:")
 	fmt.Println("  1. Edit SKILL.md with your skill instructions")
 	fmt.Println("  2. Add dependencies: skillz add <skill-name>")
@@ -247,11 +248,11 @@ func runInit() error {
 }
 
 func runAdd(target string, isDev bool) error {
-	manifestPath := "skillz.yaml"
+	manifestPath := "skillz.toon"
 
-	// Check if skillz.yaml exists
+	// Check if skillz.toon exists
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
-		return fmt.Errorf("skillz.yaml not found. Run 'skillz init' first")
+		return fmt.Errorf("skillz.toon not found. Run 'skillz init' first")
 	}
 
 	// Parse existing manifest
@@ -315,10 +316,10 @@ func runAdd(target string, isDev bool) error {
 }
 
 func runInstall() error {
-	manifestPath := "skillz.yaml"
+	manifestPath := "skillz.toon"
 
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
-		return fmt.Errorf("skillz.yaml not found. Run 'skillz init' first")
+		return fmt.Errorf("skillz.toon not found. Run 'skillz init' first")
 	}
 
 	manifest, err := parser.ParseManifest(manifestPath)
@@ -336,7 +337,22 @@ func runInstall() error {
 	if manifest.Dependencies.Skills != nil {
 		for name, dep := range manifest.Dependencies.Skills {
 			// Check if it's a git dependency (map with "git" key)
-			if depMap, ok := dep.(map[string]interface{}); ok {
+			// TOON may return different map types, so we need to handle them generically
+			var depMap map[string]interface{}
+
+			// Try explicit map[string]interface{} first
+			if m, ok := dep.(map[string]interface{}); ok {
+				depMap = m
+			} else {
+				// For other map types (like toon.JsonObject), convert via JSON
+				// This handles any map-like structure
+				jsonData, err := json.Marshal(dep)
+				if err == nil {
+					json.Unmarshal(jsonData, &depMap)
+				}
+			}
+
+			if depMap != nil {
 				if gitURL, hasGit := depMap["git"].(string); hasGit {
 					// Handle git dependency
 					gitRef := ""
@@ -476,10 +492,10 @@ func runUpdate(skillName string) error {
 }
 
 func runRemove(skillName string) error {
-	manifestPath := "skillz.yaml"
+	manifestPath := "skillz.toon"
 
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
-		return fmt.Errorf("skillz.yaml not found")
+		return fmt.Errorf("skillz.toon not found")
 	}
 
 	manifest, err := parser.ParseManifest(manifestPath)
@@ -519,10 +535,10 @@ func runRemove(skillName string) error {
 }
 
 func runList() error {
-	manifestPath := "skillz.yaml"
+	manifestPath := "skillz.toon"
 
 	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
-		return fmt.Errorf("skillz.yaml not found")
+		return fmt.Errorf("skillz.toon not found")
 	}
 
 	manifest, err := parser.ParseManifest(manifestPath)

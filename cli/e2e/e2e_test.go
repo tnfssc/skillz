@@ -41,7 +41,7 @@ func TestAuthAndPublishFlow(t *testing.T) {
 		}
 
 		// Verify credentials file
-		credsPath := filepath.Join(tmpDir, ".skillz", "credentials.json")
+		credsPath := filepath.Join(tmpDir, ".skillz", "credentials.toon")
 		if _, err := os.Stat(credsPath); os.IsNotExist(err) {
 			t.Errorf("Credentials file not created at %s", credsPath)
 		}
@@ -55,10 +55,10 @@ func TestAuthAndPublishFlow(t *testing.T) {
 
 	t.Run("Publish", func(t *testing.T) {
 		// Create skill files
-		createFile(t, filepath.Join(producerDir, "skillz.yaml"), `
+		createFile(t, filepath.Join(producerDir, "skillz.toon"), `
 name: e2e-test-skill
 version: 1.0.0
-manifest-version: '1'
+manifest-version: "1"
 skill:
   main: SKILL.md
 `)
@@ -85,10 +85,10 @@ skill:
 
 	t.Run("Install", func(t *testing.T) {
 		// Create consumer manifest
-		createFile(t, filepath.Join(consumerDir, "skillz.yaml"), `
+		createFile(t, filepath.Join(consumerDir, "skillz.toon"), `
 name: e2e-consumer
 version: 1.0.0
-manifest-version: '1'
+manifest-version: "1"
 skill:
   main: SKILL.md
 dependencies:
@@ -163,10 +163,10 @@ dependencies:
 
 		// Create manifest with git dependency
 		// Using a small, stable public repo
-		createFile(t, filepath.Join(gitConsumerDir, "skillz.yaml"), `
+		createFile(t, filepath.Join(gitConsumerDir, "skillz.toon"), `
 name: git-consumer
 version: 1.0.0
-manifest-version: '1'
+manifest-version: "1"
 skill:
   main: SKILL.md
 dependencies:
