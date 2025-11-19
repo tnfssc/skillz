@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	gitpkg "github.com/skillz/cli/internal/git"
-	"github.com/skillz/cli/internal/resolver"
+	gitpkg "github.com/tnfssc/skillz/cli/internal/git"
+	"github.com/tnfssc/skillz/cli/internal/resolver"
 )
 
 const (

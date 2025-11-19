@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/skillz/cli/internal/config"
-	"github.com/skillz/cli/internal/resolver"
+	"github.com/tnfssc/skillz/cli/internal/config"
+	"github.com/tnfssc/skillz/cli/internal/resolver"
 )
 
 type RegistryProvider struct {
@@ -80,27 +80,27 @@ func (p *RegistryProvider) GetDependencies(name string, version *semver.Version)
 	}
 
 	var deps []resolver.Dependency
-	
+
 	// Add regular dependencies
 	if manifest.Dependencies.Skills != nil {
 		for depName, depSpec := range manifest.Dependencies.Skills {
 			// Handle string version or object
 			var constraintStr string
-			
+
 			// We need to handle the polymorphic nature of dependencies here
 			// But wait, config.Dependencies.Skills is map[string]interface{}?
 			// Let's check config/types.go
-			
+
 			// Actually, let's look at how we parsed it in parser.go.
 			// In config/types.go, Dependencies struct has Skills map[string]interface{}?
 			// No, let's check types.go content.
-			
+
 			// Assuming it's map[string]interface{} based on previous work,
 			// or maybe I need to check types.go to be sure.
-			
+
 			// For now, let's assume simple string version for MVP since that's what we seeded.
 			// If it's an object, we might need more logic.
-			
+
 			switch v := depSpec.(type) {
 			case string:
 				constraintStr = v

@@ -7,10 +7,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/skillz/cli/internal/auth"
-	"github.com/skillz/cli/internal/packager"
-	"github.com/skillz/cli/internal/parser"
-	"github.com/skillz/cli/internal/registry"
+	"github.com/tnfssc/skillz/cli/internal/auth"
+	"github.com/tnfssc/skillz/cli/internal/packager"
+	"github.com/tnfssc/skillz/cli/internal/parser"
+	"github.com/tnfssc/skillz/cli/internal/registry"
 )
 
 var publishCmd = &cobra.Command{
@@ -50,7 +50,7 @@ func runPublish(cmd *cobra.Command, args []string) error {
 	// Create tarball
 	tarballName := fmt.Sprintf("%s-%s.tgz", manifest.Name, manifest.Version)
 	tarballPath := filepath.Join(os.TempDir(), tarballName)
-	
+
 	fmt.Println("📦 Creating package...")
 	cwd, err := os.Getwd()
 	if err != nil {

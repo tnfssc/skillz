@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/skillz/cli/internal/config"
+	"github.com/tnfssc/skillz/cli/internal/config"
 )
 
 func TestParseManifest(t *testing.T) {
@@ -213,18 +213,18 @@ func TestNormalizeDependency(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dep, err := NormalizeDependency(tt.input)
-			
+
 			if tt.wantError {
 				if err == nil {
 					t.Error("expected error but got none")
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			
+
 			if tt.checkFunc != nil {
 				tt.checkFunc(t, dep)
 			}

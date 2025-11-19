@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/skillz/cli/internal/auth"
-	"github.com/skillz/cli/internal/registry"
+	"github.com/tnfssc/skillz/cli/internal/auth"
+	"github.com/tnfssc/skillz/cli/internal/registry"
 )
 
 var loginCmd = &cobra.Command{

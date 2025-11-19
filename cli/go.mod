@@ -1,4 +1,4 @@
-module github.com/skillz/cli
+module github.com/tnfssc/skillz/cli
 
 go 1.24.1
 

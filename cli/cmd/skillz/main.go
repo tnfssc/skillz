@@ -8,12 +8,12 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/skillz/cli/internal/config"
-	"github.com/skillz/cli/internal/installer"
-	"github.com/skillz/cli/internal/lockfile"
-	"github.com/skillz/cli/internal/parser"
-	"github.com/skillz/cli/internal/registry"
-	"github.com/skillz/cli/internal/resolver"
+	"github.com/tnfssc/skillz/cli/internal/config"
+	"github.com/tnfssc/skillz/cli/internal/installer"
+	"github.com/tnfssc/skillz/cli/internal/lockfile"
+	"github.com/tnfssc/skillz/cli/internal/parser"
+	"github.com/tnfssc/skillz/cli/internal/registry"
+	"github.com/tnfssc/skillz/cli/internal/resolver"
 	"github.com/spf13/cobra"
 )
 

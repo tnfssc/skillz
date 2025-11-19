@@ -349,7 +349,7 @@ pnpm test                        # Run Vitest tests
 
 ### CLI (Go)
 
-1. **Import paths** - Use full paths: `github.com/skillz/cli/internal/installer`
+1. **Import paths** - Use full paths: `github.com/tnfssc/skillz/cli/internal/installer`
 2. **YAML tags** - Must match field names: `` `yaml:"name"` ``
 3. **File paths** - Use `filepath.Join()` for cross-platform compatibility
 4. **Testing** - Tests in package `foo` should use `package foo`, not `package foo_test` unless testing public API only

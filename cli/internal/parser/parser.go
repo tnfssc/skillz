@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/skillz/cli/internal/config"
+	"github.com/tnfssc/skillz/cli/internal/config"
 	"gopkg.in/yaml.v3"
 )
 
@@ -62,7 +62,7 @@ func NormalizeDependency(dep interface{}) (*config.SkillDependency, error) {
 	case map[string]interface{}:
 		// Complex dependency object
 		result := &config.SkillDependency{}
-		
+
 		if version, ok := v["version"].(string); ok {
 			result.Version = version
 		}
@@ -78,7 +78,7 @@ func NormalizeDependency(dep interface{}) (*config.SkillDependency, error) {
 		if path, ok := v["path"].(string); ok {
 			result.Path = path
 		}
-		
+
 		return result, nil
 	default:
 		return nil, fmt.Errorf("invalid dependency format")

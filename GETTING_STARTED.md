@@ -82,7 +82,7 @@ wrangler d1 execute skillz-registry --file=../../packages/db/migrations/0001_ini
 ## Project Structure
 
 ```
-skillz.hot/
+skillz.lat/
 ├── cli/                    # Go CLI tool
 │   ├── cmd/skillz/        # Main entry point
 │   │   └── main.go        # ✅ CLI commands

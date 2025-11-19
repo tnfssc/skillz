@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/skillz/cli/internal/resolver"
+	"github.com/tnfssc/skillz/cli/internal/resolver"
 )
 
 func TestNewInstaller(t *testing.T) {

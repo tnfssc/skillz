@@ -14,7 +14,7 @@ DEMO_DIR="/tmp/skillz-demo-$(date +%s)"
 mkdir -p "$DEMO_DIR"
 cd "$DEMO_DIR"
 
-SKILLZ="/home/tnfssc/Code/Private/skillz.hot/dist/skillz"
+SKILLZ="/home/tnfssc/Code/Private/skillz.lat/dist/skillz"
 
 echo "📁 Demo directory: $DEMO_DIR"
 echo ""

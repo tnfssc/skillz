@@ -22,7 +22,7 @@ cd apps/web && pnpm dev
 ## 📁 Project Structure
 
 ```
-skillz.hot/
+skillz.lat/
 ├── cli/                           # Go CLI for package management
 │   ├── cmd/skillz/                # CLI commands (init, add, install, etc.)
 │   └── internal/
