@@ -1,0 +1,15 @@
+name = "skillz-web"
+main = "src/index.tsx"
+compatibility_date = "2024-11-18"
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "skillz-registry"
+database_id = "YOUR_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "skillz-packages"

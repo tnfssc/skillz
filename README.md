@@ -403,4 +403,3 @@ MIT
 ---
 
 **Built with ❤️ using Cloudflare's edge platform**
-# skillz

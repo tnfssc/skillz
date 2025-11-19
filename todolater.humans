@@ -1,0 +1,5 @@
+switch to better auth
+only publish allow if 2fa and phone number linked
+google auth only supported
+use oauth or api keys for cli auth, oauth default -> give a link the user can log into and the CLI gets logged in
+switch to toon instead of json or yaml everywhere
