@@ -60,7 +60,7 @@ func runPublish(cmd *cobra.Command, args []string) error {
 	if err := packager.CreateTarball(cwd, tarballPath); err != nil {
 		return fmt.Errorf("failed to create tarball: %w", err)
 	}
-	defer os.Remove(tarballPath)
+	defer func() { _ = os.Remove(tarballPath) }()
 
 	// Publish
 	fmt.Println("🚀 Uploading to registry...")

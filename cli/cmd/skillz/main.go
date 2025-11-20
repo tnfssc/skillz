@@ -459,10 +459,11 @@ func runInstall() error {
 			Resolved: pkg.Source,
 		}
 
-		if pkg.Location == "registry" {
+		switch pkg.Location {
+		case "registry":
 			lockPkg.Version = pkg.Version
 			lockPkg.Integrity = pkg.Integrity
-		} else if pkg.Location == "git" {
+		case "git":
 			lockPkg.GitURL = pkg.GitURL
 			lockPkg.GitRef = pkg.GitRef
 			lockPkg.GitSHA = pkg.GitSHA

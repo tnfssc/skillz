@@ -64,7 +64,7 @@ func (c *Client) GetSkill(name string) (*SkillResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("skill not found: %s", name)
@@ -108,7 +108,7 @@ func (c *Client) Login(username, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("login failed: %s", resp.Status)
@@ -127,7 +127,7 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -166,7 +166,7 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		// Try to read error message

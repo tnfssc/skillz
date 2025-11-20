@@ -2,6 +2,10 @@
 
 The command-line interface for the Skillz package manager.
 
+## Prerequisites
+
+- [mise](https://mise.jdx.dev) (recommended) or Go 1.21+
+
 ## Installation
 
 ### From Source

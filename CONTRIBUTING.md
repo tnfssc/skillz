@@ -11,9 +11,7 @@ We love your input! We want to make contributing to Skillz as easy and transpare
 
 ### Prerequisites
 
-- Go 1.21+
-- Node.js 20+
-- pnpm
+- [mise](https://mise.jdx.dev) (for managing tool versions)
 
 ### Setting up the Monorepo
 

@@ -4,6 +4,15 @@
 
 Skillz is a package manager and registry designed to make it easy to discover, install, and manage AI skills and Model Context Protocol (MCP) servers. Just as npm revolutionized JavaScript development, Skillz aims to streamline the ecosystem of AI capabilities.
 
+## 🛠️ Prerequisites
+
+- [mise](https://mise.jdx.dev) (for managing tool versions)
+
+```bash
+# Install tools
+mise install
+```
+
 ## 🌟 Features
 
 - **📦 Dependency Management:** Declare skills and MCP servers in a `skillz.toon` manifest.

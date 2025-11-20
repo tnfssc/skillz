@@ -16,15 +16,15 @@ func CreateTarball(srcDir, destFile string) error {
 	if err != nil {
 		return err
 	}
-	defer fw.Close()
+	defer func() { _ = fw.Close() }()
 
 	// Create gzip writer
 	gw := gzip.NewWriter(fw)
-	defer gw.Close()
+	defer func() { _ = gw.Close() }()
 
 	// Create tar writer
 	tw := tar.NewWriter(gw)
-	defer tw.Close()
+	defer func() { _ = tw.Close() }()
 
 	// Walk through source directory
 	return filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
@@ -71,7 +71,7 @@ func CreateTarball(srcDir, destFile string) error {
 			if err != nil {
 				return err
 			}
-			defer file.Close()
+			defer func() { _ = file.Close() }()
 
 			if _, err := io.Copy(tw, file); err != nil {
 				return err

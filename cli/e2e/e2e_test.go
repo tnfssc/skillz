@@ -16,17 +16,19 @@ func TestAuthAndPublishFlow(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to build CLI: %v", err)
 	}
-	defer os.Remove(cliPath)
+	defer func() { _ = os.Remove(cliPath) }()
 
 	// 2. Setup Test Environment
 	tmpDir, err := os.MkdirTemp("", "skillz-e2e-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Set HOME to tmpDir to isolate credentials
-	os.Setenv("HOME", tmpDir)
+	if err := os.Setenv("HOME", tmpDir); err != nil {
+		t.Fatalf("Failed to set HOME env var: %v", err)
+	}
 
 	// 3. Test Login
 	t.Run("Login", func(t *testing.T) {
@@ -136,7 +138,7 @@ dependencies:
 
 		// Remove installed files to force re-extraction
 		installedPath := filepath.Join(consumerDir, ".skillz", "skills", "e2e-test-skill")
-		os.RemoveAll(installedPath)
+		_ = os.RemoveAll(installedPath)
 
 		// Run install - should fail due to checksum mismatch
 		cmd := exec.Command(cliPath, "install")

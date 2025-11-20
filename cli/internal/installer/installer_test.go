@@ -15,9 +15,9 @@ import (
 func setupMockRegistry(t *testing.T) *httptest.Server {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gw := gzip.NewWriter(w)
-		defer gw.Close()
+		defer func() { _ = gw.Close() }()
 		tw := tar.NewWriter(gw)
-		defer tw.Close()
+		defer func() { _ = tw.Close() }()
 
 		body := []byte("hello world")
 		hdr := &tar.Header{

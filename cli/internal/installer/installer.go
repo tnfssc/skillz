@@ -148,7 +148,9 @@ func (i *Installer) installFromGit(pkg resolver.ResolvedPackage) error {
 	fmt.Println("  Installing from git...")
 
 	// Remove existing installation
-	os.RemoveAll(installPath)
+	if err := os.RemoveAll(installPath); err != nil {
+		return fmt.Errorf("failed to remove existing installation: %w", err)
+	}
 
 	// Copy directory
 	if err := copyDir(gitCacheDir, installPath); err != nil {
@@ -190,7 +192,9 @@ func (i *Installer) installFromRegistry(pkg resolver.ResolvedPackage) error {
 	fmt.Println("  Extracting...")
 
 	// Remove existing installation if any
-	os.RemoveAll(installPath)
+	if err := os.RemoveAll(installPath); err != nil {
+		return fmt.Errorf("failed to remove existing installation: %w", err)
+	}
 
 	// Extract
 	if err := i.extractTarball(cachePath, installPath); err != nil {
@@ -215,7 +219,7 @@ func verifyChecksum(path, integrity string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	hasher := sha256.New()
 	if _, err := io.Copy(hasher, file); err != nil {
@@ -235,7 +239,7 @@ func (i *Installer) downloadFile(url, dest string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("server returned %s", resp.Status)
@@ -245,7 +249,7 @@ func (i *Installer) downloadFile(url, dest string) error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 
 	_, err = io.Copy(out, resp.Body)
 	return err
@@ -257,14 +261,14 @@ func (i *Installer) extractTarball(src, dest string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// Create gzip reader
 	gzr, err := gzip.NewReader(f)
 	if err != nil {
 		return err
 	}
-	defer gzr.Close()
+	defer func() { _ = gzr.Close() }()
 
 	// Create tar reader
 	tr := tar.NewReader(gzr)
@@ -316,11 +320,9 @@ func (i *Installer) extractTarball(src, dest string) error {
 				return err
 			}
 
-			if _, err := io.Copy(f, tr); err != nil {
-				f.Close()
+			if err := f.Close(); err != nil {
 				return err
 			}
-			f.Close()
 
 			// Set permissions
 			// os.Chmod(target, os.FileMode(header.Mode))
@@ -401,13 +403,13 @@ func copyDir(src, dst string) error {
 		if err != nil {
 			return err
 		}
-		defer sourceFile.Close()
+		defer func() { _ = sourceFile.Close() }()
 
 		targetFile, err := os.Create(targetPath)
 		if err != nil {
 			return err
 		}
-		defer targetFile.Close()
+		defer func() { _ = targetFile.Close() }()
 
 		if _, err := io.Copy(targetFile, sourceFile); err != nil {
 			return err
