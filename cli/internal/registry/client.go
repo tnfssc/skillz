@@ -133,8 +133,12 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 	writer := multipart.NewWriter(body)
 
 	// Add metadata fields
-	writer.WriteField("name", name)
-	writer.WriteField("version", version)
+	if err := writer.WriteField("name", name); err != nil {
+		return err
+	}
+	if err := writer.WriteField("version", version); err != nil {
+		return err
+	}
 
 	part, err := writer.CreateFormFile("tarball", filepath.Base(tarballPath))
 	if err != nil {
@@ -169,7 +173,9 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 		var errResp struct {
 			Error string `json:"error"`
 		}
-		json.NewDecoder(resp.Body).Decode(&errResp)
+		if err := json.NewDecoder(resp.Body).Decode(&errResp); err != nil {
+			return fmt.Errorf("publish failed: %s (and failed to parse error response: %v)", resp.Status, err)
+		}
 
 		if errResp.Error != "" {
 			return fmt.Errorf("publish failed: %s", errResp.Error)

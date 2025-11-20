@@ -187,7 +187,7 @@ func runInit() error {
 	manifest := &config.SkillzManifest{
 		ManifestVersion: config.ManifestV1,
 		Name:            name,
-		Version:         "0.1.0",
+		Version:         ver,
 		Description:     &desc,
 		Author:          &author,
 		License:         stringPtr("MIT"),
@@ -427,14 +427,6 @@ func runInstall() error {
 
 	// Add git dependencies to plan
 	plan = append(plan, gitDeps...)
-
-	// Get commit SHAs for git dependencies
-	for i := range plan {
-		if plan[i].Location == "git" && plan[i].GitURL != "" {
-			// We'll get the SHA after cloning in the installer
-			// For now, leave it empty
-		}
-	}
 
 	// Print plan
 	fmt.Println("\nResolution Plan:")

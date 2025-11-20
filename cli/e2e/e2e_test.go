@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-const (
-	apiURL = "http://localhost:8787/api/v1"
-)
-
 func TestAuthAndPublishFlow(t *testing.T) {
 	// 1. Build CLI
 	cliPath, err := buildCLI()

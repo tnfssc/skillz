@@ -9,6 +9,7 @@ enabled = true
 binding = "DB"
 database_name = "skillz-registry"
 database_id = "YOUR_D1_DATABASE_ID" # Replace after creating D1 database
+migrations_dir = "../../packages/db/migrations"
 
 [[r2_buckets]]
 binding = "BUCKET"
@@ -30,6 +31,7 @@ name = "skillz-api-prod"
 binding = "DB"
 database_name = "skillz-registry-prod"
 database_id = "PROD_D1_DATABASE_ID" # Replace with production DB ID
+migrations_dir = "../../packages/db/migrations"
 
 [[env.production.r2_buckets]]
 binding = "BUCKET"
