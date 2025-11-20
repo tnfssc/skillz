@@ -1,12 +1,39 @@
 package installer
 
 import (
+	"archive/tar"
+	"compress/gzip"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/tnfssc/skillz/cli/internal/resolver"
 )
+
+func setupMockRegistry(t *testing.T) *httptest.Server {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gw := gzip.NewWriter(w)
+		defer gw.Close()
+		tw := tar.NewWriter(gw)
+		defer tw.Close()
+
+		body := []byte("hello world")
+		hdr := &tar.Header{
+			Name: "SKILL.md",
+			Mode: 0600,
+			Size: int64(len(body)),
+		}
+		if err := tw.WriteHeader(hdr); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write(body); err != nil {
+			t.Fatal(err)
+		}
+	}))
+	return ts
+}
 
 func TestNewInstaller(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -69,14 +96,17 @@ func TestIsInstalled(t *testing.T) {
 func TestInstallSkill(t *testing.T) {
 	tmpDir := t.TempDir()
 	installer := NewInstaller(tmpDir)
+	ts := setupMockRegistry(t)
+	defer ts.Close()
 
 	skillName := "test-skill"
 	version := "1.0.0"
 
 	pkg := resolver.ResolvedPackage{
-		Name:     skillName,
-		Version:  version,
-		Location: "registry",
+		Name:       skillName,
+		Version:    version,
+		Location:   "registry",
+		TarballURL: ts.URL,
 	}
 
 	if err := installer.Install(pkg); err != nil {
@@ -92,15 +122,18 @@ func TestInstallSkill(t *testing.T) {
 func TestUninstallSkill(t *testing.T) {
 	tmpDir := t.TempDir()
 	installer := NewInstaller(tmpDir)
+	ts := setupMockRegistry(t)
+	defer ts.Close()
 
 	// Install a skill first
 	skillName := "test-skill"
 	version := "1.0.0"
 
 	pkg := resolver.ResolvedPackage{
-		Name:     skillName,
-		Version:  version,
-		Location: "registry",
+		Name:       skillName,
+		Version:    version,
+		Location:   "registry",
+		TarballURL: ts.URL,
 	}
 
 	if err := installer.Install(pkg); err != nil {
@@ -131,6 +164,8 @@ func TestUninstallSkill_NotInstalled(t *testing.T) {
 func TestListInstalled(t *testing.T) {
 	tmpDir := t.TempDir()
 	installer := NewInstaller(tmpDir)
+	ts := setupMockRegistry(t)
+	defer ts.Close()
 
 	// Initially empty
 	skills, err := installer.ListInstalled()
@@ -145,9 +180,10 @@ func TestListInstalled(t *testing.T) {
 	skillNames := []string{"skill-a", "skill-b", "skill-c"}
 	for _, name := range skillNames {
 		pkg := resolver.ResolvedPackage{
-			Name:     name,
-			Version:  "1.0.0",
-			Location: "registry",
+			Name:       name,
+			Version:    "1.0.0",
+			Location:   "registry",
+			TarballURL: ts.URL,
 		}
 		if err := installer.Install(pkg); err != nil {
 			t.Fatalf("failed to install %s: %v", name, err)

@@ -14,19 +14,19 @@ type SkillzManifest struct {
 	ManifestVersion ManifestVersion `toon:"manifest-version"`
 	Name            string          `toon:"name"`
 	Version         string          `toon:"version"`
-	Description     string          `toon:"description,omitempty"`
-	Author          string          `toon:"author,omitempty"`
-	License         string          `toon:"license,omitempty"`
-	Homepage        string          `toon:"homepage,omitempty"`
-	Repository      string          `toon:"repository,omitempty"`
+	Description     *string         `toon:"description,omitempty"`
+	Author          *string         `toon:"author,omitempty"`
+	License         *string         `toon:"license,omitempty"`
+	Homepage        *string         `toon:"homepage,omitempty"`
+	Repository      *string         `toon:"repository,omitempty"`
 	Keywords        []string        `toon:"keywords,omitempty"`
-	Dependencies    Dependencies    `toon:"dependencies,omitempty"`
-	DevDependencies Dependencies    `toon:"dev-dependencies,omitempty"`
+	Dependencies    *Dependencies   `toon:"dependencies,omitempty"`
+	DevDependencies *Dependencies   `toon:"dev-dependencies,omitempty"`
 	Scripts         Scripts         `toon:"scripts,omitempty"`
-	Hooks           Hooks           `toon:"hooks,omitempty"`
-	Skill           SkillConfig     `toon:"skill,omitempty"`
-	Constraints     Constraints     `toon:"constraints,omitempty"`
-	Integrity       Integrity       `toon:"integrity,omitempty"`
+	Hooks           *Hooks          `toon:"hooks,omitempty"`
+	Skill           *SkillConfig    `toon:"skill,omitempty"`
+	Constraints     *Constraints    `toon:"constraints,omitempty"`
+	Integrity       *Integrity      `toon:"integrity,omitempty"`
 }
 
 // Dependencies represents all types of dependencies

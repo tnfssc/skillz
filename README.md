@@ -43,7 +43,7 @@ dependencies:
     data-analysis: ^1.0.0
     git-helper:
       git: https://github.com/user/git-helper.git
-      ref: main
+      ref: develop
 ```
 
 Then run:

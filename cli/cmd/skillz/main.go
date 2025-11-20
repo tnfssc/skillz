@@ -187,22 +187,22 @@ func runInit() error {
 	manifest := &config.SkillzManifest{
 		ManifestVersion: config.ManifestV1,
 		Name:            name,
-		Version:         ver,
-		Description:     desc,
-		Author:          author,
-		License:         "MIT",
+		Version:         "0.1.0",
+		Description:     &desc,
+		Author:          &author,
+		License:         stringPtr("MIT"),
 		Keywords:        []string{},
-		Dependencies:    config.Dependencies{},
-		DevDependencies: config.Dependencies{},
+		Dependencies:    &config.Dependencies{},
+		DevDependencies: &config.Dependencies{},
 		Scripts:         config.Scripts{},
-		Hooks:           config.Hooks{},
-		Skill: config.SkillConfig{
+		Hooks:           &config.Hooks{},
+		Skill: &config.SkillConfig{
 			Main:     main,
 			Requires: []string{},
 			Exports:  []string{},
 		},
-		Constraints: config.Constraints{
-			OS: []string{"linux", "macos", "windows"},
+		Constraints: &config.Constraints{
+			OS: []string{"linux", "darwin", "windows"},
 		},
 	}
 
@@ -290,8 +290,14 @@ func runAdd(target string, isDev bool) error {
 	}
 
 	// Initialize dependencies maps if nil
+	if manifest.Dependencies == nil {
+		manifest.Dependencies = &config.Dependencies{}
+	}
 	if manifest.Dependencies.Skills == nil {
 		manifest.Dependencies.Skills = make(map[string]interface{})
+	}
+	if manifest.DevDependencies == nil {
+		manifest.DevDependencies = &config.Dependencies{}
 	}
 	if manifest.DevDependencies.Skills == nil {
 		manifest.DevDependencies.Skills = make(map[string]interface{})
@@ -334,7 +340,7 @@ func runInstall() error {
 	var rootDeps []resolver.Dependency
 	var gitDeps []resolver.ResolvedPackage // Git deps are "resolved" immediately
 
-	if manifest.Dependencies.Skills != nil {
+	if manifest.Dependencies != nil && manifest.Dependencies.Skills != nil {
 		for name, dep := range manifest.Dependencies.Skills {
 
 			// Helper function to get string from map-like structure
@@ -508,13 +514,13 @@ func runRemove(skillName string) error {
 
 	// Check if skill exists in dependencies
 	found := false
-	if manifest.Dependencies.Skills != nil {
+	if manifest.Dependencies != nil && manifest.Dependencies.Skills != nil {
 		if _, exists := manifest.Dependencies.Skills[skillName]; exists {
 			delete(manifest.Dependencies.Skills, skillName)
 			found = true
 		}
 	}
-	if manifest.DevDependencies.Skills != nil {
+	if manifest.DevDependencies != nil && manifest.DevDependencies.Skills != nil {
 		if _, exists := manifest.DevDependencies.Skills[skillName]; exists {
 			delete(manifest.DevDependencies.Skills, skillName)
 			found = true
@@ -549,7 +555,7 @@ func runList() error {
 
 	fmt.Printf("📋 %s@%s\n\n", manifest.Name, manifest.Version)
 
-	if len(manifest.Dependencies.Skills) > 0 {
+	if manifest.Dependencies != nil && len(manifest.Dependencies.Skills) > 0 {
 		fmt.Println("Dependencies:")
 		for name, dep := range manifest.Dependencies.Skills {
 			if version, ok := dep.(string); ok {
@@ -561,7 +567,7 @@ func runList() error {
 		fmt.Println()
 	}
 
-	if len(manifest.DevDependencies.Skills) > 0 {
+	if manifest.DevDependencies != nil && len(manifest.DevDependencies.Skills) > 0 {
 		fmt.Println("Dev Dependencies:")
 		for name, dep := range manifest.DevDependencies.Skills {
 			if version, ok := dep.(string); ok {
@@ -573,7 +579,7 @@ func runList() error {
 		fmt.Println()
 	}
 
-	if len(manifest.Dependencies.MCPServers) > 0 {
+	if manifest.Dependencies != nil && len(manifest.Dependencies.MCPServers) > 0 {
 		fmt.Println("MCP Servers:")
 		for name := range manifest.Dependencies.MCPServers {
 			fmt.Printf("  • %s\n", name)
@@ -581,7 +587,7 @@ func runList() error {
 		fmt.Println()
 	}
 
-	if len(manifest.Dependencies.CLITools) > 0 {
+	if manifest.Dependencies != nil && len(manifest.Dependencies.CLITools) > 0 {
 		fmt.Println("CLI Tools:")
 		for name, version := range manifest.Dependencies.CLITools {
 			fmt.Printf("  • %s@%s\n", name, version)
@@ -607,4 +613,8 @@ func mustGetwd() string {
 		return "my-skill"
 	}
 	return dir
+}
+
+func stringPtr(s string) *string {
+	return &s
 }

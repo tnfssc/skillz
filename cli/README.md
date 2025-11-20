@@ -81,7 +81,11 @@ dependencies:
     browser-use: ^1.0.0
 
     # Git dependency
-    git-tool:
-      git: https://github.com/user/git-tool.git
-      ref: v1.2.0
+    git-helper:
+      git: https://github.com/user/git-helper.git
+      ref: develop
+```
+
+```
+
 ```

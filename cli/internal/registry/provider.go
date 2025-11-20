@@ -82,7 +82,7 @@ func (p *RegistryProvider) GetDependencies(name string, version *semver.Version)
 	var deps []resolver.Dependency
 
 	// Add regular dependencies
-	if manifest.Dependencies.Skills != nil {
+	if manifest.Dependencies != nil && manifest.Dependencies.Skills != nil {
 		for depName, depSpec := range manifest.Dependencies.Skills {
 			// Handle string version or object
 			var constraintStr string

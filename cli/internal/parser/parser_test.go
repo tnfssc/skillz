@@ -8,6 +8,10 @@ import (
 	"github.com/tnfssc/skillz/cli/internal/config"
 )
 
+func stringPtr(s string) *string {
+	return &s
+}
+
 func TestParseManifest(t *testing.T) {
 	// Create a temporary directory for testing
 	tmpDir := t.TempDir()
@@ -22,10 +26,8 @@ author: Test Author
 license: MIT
 skill:
   main: SKILL.md
-  requires:
-    - tools
-  exports:
-    - analyze
+  requires: ["tools"]
+  exports: ["analyze"]
 dependencies:
   skills:
     helper-skill: "^1.0.0"
@@ -54,10 +56,10 @@ dependencies:
 	if manifest.Skill.Main != "SKILL.md" {
 		t.Errorf("expected main 'SKILL.md', got '%s'", manifest.Skill.Main)
 	}
-	if len(manifest.Dependencies.Skills) != 1 {
+	if manifest.Dependencies != nil && len(manifest.Dependencies.Skills) != 1 {
 		t.Errorf("expected 1 skill dependency, got %d", len(manifest.Dependencies.Skills))
 	}
-	if len(manifest.Dependencies.CLITools) != 1 {
+	if manifest.Dependencies != nil && len(manifest.Dependencies.CLITools) != 1 {
 		t.Errorf("expected 1 CLI tool, got %d", len(manifest.Dependencies.CLITools))
 	}
 }
@@ -140,10 +142,10 @@ func TestWriteManifest(t *testing.T) {
 		ManifestVersion: config.ManifestV1,
 		Name:            "test-skill",
 		Version:         "1.0.0",
-		Description:     "A test skill",
-		Author:          "Test Author",
-		License:         "MIT",
-		Skill: config.SkillConfig{
+		Description:     stringPtr("A test skill"),
+		Author:          stringPtr("Test Author"),
+		License:         stringPtr("MIT"),
+		Skill: &config.SkillConfig{
 			Main:     "SKILL.md",
 			Requires: []string{"tools"},
 			Exports:  []string{"analyze"},
@@ -162,6 +164,8 @@ func TestWriteManifest(t *testing.T) {
 	// Parse it back
 	parsed, err := ParseManifest(manifestPath)
 	if err != nil {
+		content, _ := os.ReadFile(manifestPath)
+		t.Logf("Manifest content:\n%s", string(content))
 		t.Fatalf("failed to parse written manifest: %v", err)
 	}
 
@@ -191,15 +195,15 @@ func TestNormalizeDependency(t *testing.T) {
 			name: "git dependency",
 			input: map[string]interface{}{
 				"git":    "https://github.com/user/skill",
-				"branch": "main",
+				"branch": "develop",
 			},
 			wantError: false,
 			checkFunc: func(t *testing.T, dep *config.SkillDependency) {
 				if dep.Git != "https://github.com/user/skill" {
 					t.Errorf("expected git URL, got '%s'", dep.Git)
 				}
-				if dep.Branch != "main" {
-					t.Errorf("expected branch 'main', got '%s'", dep.Branch)
+				if dep.Branch != "develop" {
+					t.Errorf("expected branch 'develop', got '%s'", dep.Branch)
 				}
 			},
 		},

@@ -32,7 +32,7 @@ func ParseManifest(path string) (*config.SkillzManifest, error) {
 	if manifest.Version == "" {
 		return nil, fmt.Errorf("manifest must have a version")
 	}
-	if manifest.Skill.Main == "" {
+	if manifest.Skill == nil || manifest.Skill.Main == "" {
 		return nil, fmt.Errorf("manifest must specify skill.main")
 	}
 

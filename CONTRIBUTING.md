@@ -57,7 +57,7 @@ We love your input! We want to make contributing to Skillz as easy and transpare
 
 ## Pull Request Process
 
-1.  Fork the repo and create your branch from `main`.
+1.  Fork the repo and create your branch from `develop`.
 2.  If you've added code that should be tested, add tests.
 3.  Ensure the test suite passes.
 4.  Make sure your code lints.
