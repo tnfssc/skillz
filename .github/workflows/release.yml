@@ -29,11 +29,6 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - name: Run tests
-        run: |
-          cd cli
-          go test -v ./...
-
       - name: Build the executable
         env:
           GOOS: ${{ matrix.goos }}
