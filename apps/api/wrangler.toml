@@ -20,3 +20,20 @@ index_name = "skillz-embeddings"
 
 [ai]
 binding = "AI"
+
+# Production Environment
+[env.production]
+name = "skillz-api-prod"
+# routes = ["api.skillz.dev/*"]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "skillz-registry-prod"
+database_id = "PROD_D1_DATABASE_ID" # Replace with production DB ID
+
+[[env.production.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "skillz-packages-prod"
+
+[env.production.vars]
+ENVIRONMENT = "production"

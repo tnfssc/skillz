@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install API Dependencies
+        run: |
+          cd apps/api
+          pnpm install
+
+      - name: Setup Database
+        run: |
+          cd apps/api
+          pnpm run db:migrate
+          pnpm run db:seed
+
+      - name: Start API Server
+        run: |
+          cd apps/api
+          pnpm run dev -- --port 8787 &
+          echo "Waiting for API to start..."
+          timeout 30s bash -c 'until curl -s http://localhost:8787/api/v1/health; do sleep 1; done'
+
+      - name: Run CLI Tests
+        run: |
+          cd cli
+          go test -v ./...
+        env:
+          SKILLZ_REGISTRY_URL: http://localhost:8787/api/v1
