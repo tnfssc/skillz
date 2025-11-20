@@ -4,9 +4,8 @@ go 1.24.1
 
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/cobra v1.10.1
-	github.com/tnfssc/goon v0.0.4
+	github.com/tnfssc/goon v0.0.5
 	golang.org/x/term v0.37.0
 )
 

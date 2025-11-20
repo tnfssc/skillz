@@ -41,7 +41,7 @@ func TestAuthAndPublishFlow(t *testing.T) {
 		}
 
 		// Verify credentials file
-		credsPath := filepath.Join(tmpDir, ".skillz", "credentials.toon")
+		credsPath := filepath.Join(tmpDir, ".skillz", "credentials.json")
 		if _, err := os.Stat(credsPath); os.IsNotExist(err) {
 			t.Errorf("Credentials file not created at %s", credsPath)
 		}
@@ -58,7 +58,7 @@ func TestAuthAndPublishFlow(t *testing.T) {
 		createFile(t, filepath.Join(producerDir, "skillz.toon"), `
 name: e2e-test-skill
 version: 1.0.0
-manifest-version: "1"
+manifest-version: 1
 skill:
   main: SKILL.md
 `)
@@ -88,7 +88,7 @@ skill:
 		createFile(t, filepath.Join(consumerDir, "skillz.toon"), `
 name: e2e-consumer
 version: 1.0.0
-manifest-version: "1"
+manifest-version: 1
 skill:
   main: SKILL.md
 dependencies:
@@ -166,7 +166,7 @@ dependencies:
 		createFile(t, filepath.Join(gitConsumerDir, "skillz.toon"), `
 name: git-consumer
 version: 1.0.0
-manifest-version: "1"
+manifest-version: 1
 skill:
   main: SKILL.md
 dependencies:

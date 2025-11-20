@@ -14,6 +14,15 @@ import (
 
 const DefaultRegistryURL = "http://localhost:8787/api/v1"
 
+// GetRegistryURL returns the registry URL, checking environment variable first
+func GetRegistryURL() string {
+	if url := os.Getenv("SKILLZ_REGISTRY_URL"); url != "" {
+		return url
+	}
+	return DefaultRegistryURL
+}
+
+// Client represents an API client for the skillz registry
 type Client struct {
 	BaseURL    string
 	HTTPClient *http.Client
@@ -21,7 +30,7 @@ type Client struct {
 
 func NewClient(baseURL string) *Client {
 	if baseURL == "" {
-		baseURL = DefaultRegistryURL
+		baseURL = GetRegistryURL()
 	}
 	return &Client{
 		BaseURL: baseURL,
@@ -43,11 +52,11 @@ type SkillMeta struct {
 }
 
 type VersionMeta struct {
-	Version   string          `json:"version"`
-	Manifest  json.RawMessage `json:"manifest"` // We'll parse this as needed
-	CreatedAt string          `json:"createdAt"`
-	TarballURL string         `json:"tarballUrl"`
-	Integrity  string         `json:"integrity"`
+	Version    string          `json:"version"`
+	Manifest   json.RawMessage `json:"manifest"` // We'll parse this as needed
+	CreatedAt  string          `json:"createdAt"`
+	TarballURL string          `json:"tarballUrl"`
+	Integrity  string          `json:"integrity"`
 }
 
 func (c *Client) GetSkill(name string) (*SkillResponse, error) {
@@ -88,7 +97,7 @@ func (c *Client) Login(username, password string) (string, error) {
 		Username: username,
 		Password: password,
 	}
-	
+
 	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		return "", err
@@ -122,20 +131,20 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	
+
 	// Add metadata fields
 	writer.WriteField("name", name)
 	writer.WriteField("version", version)
-	
+
 	part, err := writer.CreateFormFile("tarball", filepath.Base(tarballPath))
 	if err != nil {
 		return err
 	}
-	
+
 	if _, err := io.Copy(part, file); err != nil {
 		return err
 	}
-	
+
 	if err := writer.Close(); err != nil {
 		return err
 	}
@@ -161,7 +170,7 @@ func (c *Client) Publish(name, version, tarballPath, token string) error {
 			Error string `json:"error"`
 		}
 		json.NewDecoder(resp.Body).Decode(&errResp)
-		
+
 		if errResp.Error != "" {
 			return fmt.Errorf("publish failed: %s", errResp.Error)
 		}

@@ -1,85 +1,52 @@
 package parser
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/tnfssc/goon/pkg/toon"
 	"github.com/tnfssc/skillz/cli/internal/config"
 )
 
-// ParseManifest reads and parses a skillz.toon file
+// ParseManifest parses a skillz.toon file
 func ParseManifest(path string) (*config.SkillzManifest, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read manifest: %w", err)
 	}
 
-	// Decode TOON to map[string]interface{}
-	raw, err := toon.Decode(string(data), toon.DecodeOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse manifest: %w", err)
-	}
-
-	var m config.SkillzManifest
-
-	// Decode map to struct using mapstructure
-	// We need to use "toon" tag because we updated types.go
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		TagName:          "toon",
-		WeaklyTypedInput: true,
-		Result:           &m,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create decoder: %w", err)
-	}
-
-	if err := decoder.Decode(raw); err != nil {
-		return nil, fmt.Errorf("failed to decode manifest to struct: %w", err)
+	var manifest config.SkillzManifest
+	if err := toon.Unmarshal(data, &manifest, toon.DecodeOptions{IndentSize: 2}); err != nil {
+		return nil, fmt.Errorf("failed to parse TOON manifest: %w", err)
 	}
 
 	// Validate manifest version
-	if m.ManifestVersion != config.ManifestV1 {
-		return nil, fmt.Errorf("unsupported manifest version: %s", m.ManifestVersion)
+	if manifest.ManifestVersion != config.ManifestV1 {
+		return nil, fmt.Errorf("unsupported manifest version: %s", manifest.ManifestVersion)
 	}
 
 	// Validate required fields
-	if m.Name == "" {
+	if manifest.Name == "" {
 		return nil, fmt.Errorf("manifest must have a name")
 	}
-	if m.Version == "" {
+	if manifest.Version == "" {
 		return nil, fmt.Errorf("manifest must have a version")
 	}
-	if m.Skill.Main == "" {
+	if manifest.Skill.Main == "" {
 		return nil, fmt.Errorf("manifest must specify skill.main")
 	}
 
-	return &m, nil
+	return &manifest, nil
 }
 
-// WriteManifest writes a skillz.toon file
+// WriteManifest writes a manifest to a skillz.toon file
 func WriteManifest(path string, manifest *config.SkillzManifest) error {
-	// Convert struct to map[string]interface{} for TOON encoding
-	// We use json.Marshal/Unmarshal to handle nested structs properly
-	jsonData, err := json.Marshal(manifest)
-	if err != nil {
-		return fmt.Errorf("failed to marshal manifest to JSON: %w", err)
-	}
-
-	var m map[string]interface{}
-	if err := json.Unmarshal(jsonData, &m); err != nil {
-		return fmt.Errorf("failed to unmarshal JSON to map: %w", err)
-	}
-
-	// Encode map to TOON string
-	data, err := toon.Encode(m, toon.EncodeOptions{IndentSize: 2})
+	data, err := toon.Marshal(manifest, toon.EncodeOptions{IndentSize: 2})
 	if err != nil {
 		return fmt.Errorf("failed to marshal manifest: %w", err)
 	}
 
-	if err := os.WriteFile(path, []byte(data), 0644); err != nil {
+	if err := os.WriteFile(path, data, 0644); err != nil {
 		return fmt.Errorf("failed to write manifest: %w", err)
 	}
 

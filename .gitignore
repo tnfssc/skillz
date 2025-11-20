@@ -44,4 +44,4 @@ pnpm-debug.log*
 .cache/
 .turbo/
 
-skillz
+./cli/skillz

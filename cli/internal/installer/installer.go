@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	gitpkg "github.com/tnfssc/skillz/cli/internal/git"
+	"github.com/tnfssc/skillz/cli/internal/parser"
 	"github.com/tnfssc/skillz/cli/internal/resolver"
 )
 
@@ -72,14 +73,19 @@ func (i *Installer) IsInstalled(skillName string) bool {
 
 // GetInstalledVersion returns the version of an installed skill
 func (i *Installer) GetInstalledVersion(skillName string) (string, error) {
-	skillPath := filepath.Join(i.SkillsPath(), skillName, "skillz.yaml")
+	manifestPath := filepath.Join(i.SkillsPath(), skillName, "skillz.toon")
 
-	if _, err := os.Stat(skillPath); os.IsNotExist(err) {
+	if _, err := os.Stat(manifestPath); os.IsNotExist(err) {
 		return "", fmt.Errorf("skill not installed")
 	}
 
-	// TODO: Parse the manifest and return version
-	return "unknown", nil
+	// Parse the manifest to get version
+	manifest, err := parser.ParseManifest(manifestPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse manifest: %w", err)
+	}
+
+	return manifest.Version, nil
 }
 
 // Install installs a resolved package

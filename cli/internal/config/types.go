@@ -83,24 +83,24 @@ type Integrity struct {
 
 // LockFile represents skillz.lock content
 type LockFile struct {
-	Version         string                 `toon:"version"`
-	LockfileVersion int                    `toon:"lockfileVersion"`
-	Generated       time.Time              `toon:"generated"`
-	Skills          map[string]LockedSkill `toon:"skills"`
-	MCPServers      map[string]LockedSkill `toon:"mcp-servers,omitempty"`
-	CLITools        map[string]LockedTool  `toon:"cli-tools,omitempty"`
+	Version         string                 `json:"version"`
+	LockfileVersion int                    `json:"lockfileVersion"`
+	Generated       time.Time              `json:"generated"`
+	Skills          map[string]LockedSkill `json:"skills"`
+	MCPServers      map[string]LockedSkill `json:"mcp-servers,omitempty"`
+	CLITools        map[string]LockedTool  `json:"cli-tools,omitempty"`
 }
 
 // LockedSkill represents a locked skill dependency
 type LockedSkill struct {
-	Version      string            `toon:"version"`
-	Resolved     string            `toon:"resolved"`
-	Integrity    string            `toon:"integrity"`
-	Dependencies map[string]string `toon:"dependencies,omitempty"`
+	Version      string            `json:"version"`
+	Resolved     string            `json:"resolved"`
+	Integrity    string            `json:"integrity"`
+	Dependencies map[string]string `json:"dependencies,omitempty"`
 }
 
 // LockedTool represents a locked CLI tool
 type LockedTool struct {
-	Version  string `toon:"version"`
-	Resolved string `toon:"resolved"`
+	Version  string `json:"version"`
+	Resolved string `json:"resolved"`
 }

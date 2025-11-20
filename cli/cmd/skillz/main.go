@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -337,22 +336,7 @@ func runInstall() error {
 	if manifest.Dependencies.Skills != nil {
 		for name, dep := range manifest.Dependencies.Skills {
 			// Check if it's a git dependency (map with "git" key)
-			// TOON may return different map types, so we need to handle them generically
-			var depMap map[string]interface{}
-
-			// Try explicit map[string]interface{} first
-			if m, ok := dep.(map[string]interface{}); ok {
-				depMap = m
-			} else {
-				// For other map types (like toon.JsonObject), convert via JSON
-				// This handles any map-like structure
-				jsonData, err := json.Marshal(dep)
-				if err == nil {
-					json.Unmarshal(jsonData, &depMap)
-				}
-			}
-
-			if depMap != nil {
+			if depMap, ok := dep.(map[string]interface{}); ok {
 				if gitURL, hasGit := depMap["git"].(string); hasGit {
 					// Handle git dependency
 					gitRef := ""
