@@ -13,6 +13,7 @@ type Resolver struct {
 }
 
 // NewResolver creates a new resolver with the given provider
+// NewResolver creates a new Resolver instance with the given provider
 func NewResolver(provider Provider) *Resolver {
 	return &Resolver{
 		provider: provider,
@@ -25,7 +26,7 @@ func NewResolver(provider Provider) *Resolver {
 func (r *Resolver) Resolve(rootDeps []Dependency) ([]ResolvedPackage, error) {
 	// Map to store selected versions: package name -> selected version
 	selected := make(map[string]*semver.Version)
-	
+
 	// Queue of dependencies to process
 	queue := make([]Dependency, len(rootDeps))
 	copy(queue, rootDeps)
@@ -39,7 +40,7 @@ func (r *Resolver) Resolve(rootDeps []Dependency) ([]ResolvedPackage, error) {
 		if existingVer, ok := selected[current.Name]; ok {
 			// Verify the existing selection satisfies the new constraint
 			if !current.Constraint.Check(existingVer) {
-				return nil, fmt.Errorf("conflict: package %s version %s does not satisfy constraint %s", 
+				return nil, fmt.Errorf("conflict: package %s version %s does not satisfy constraint %s",
 					current.Name, existingVer, current.Constraint)
 			}
 			continue

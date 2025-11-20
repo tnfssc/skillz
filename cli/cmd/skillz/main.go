@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -335,28 +336,44 @@ func runInstall() error {
 
 	if manifest.Dependencies.Skills != nil {
 		for name, dep := range manifest.Dependencies.Skills {
-			// Check if it's a git dependency (map with "git" key)
-			if depMap, ok := dep.(map[string]interface{}); ok {
-				if gitURL, hasGit := depMap["git"].(string); hasGit {
-					// Handle git dependency
-					gitRef := ""
-					if ref, ok := depMap["ref"].(string); ok {
-						gitRef = ref
-					}
 
-					// For git deps, we need to clone first to get the manifest
-					// For simplicity in this MVP, we'll add them to a separate list
-					// and install them directly without full transitive resolution
-					gitDeps = append(gitDeps, resolver.ResolvedPackage{
-						Name:     name,
-						Location: "git",
-						Source:   gitURL,
-						GitURL:   gitURL,
-						GitRef:   gitRef,
-						Version:  gitRef, // Use ref as version for display
-					})
-					continue
+			// Helper function to get string from map-like structure
+			getMapString := func(m interface{}, key string) (string, bool) {
+				// Use reflection to access the underlying map
+				v := reflect.ValueOf(m)
+				if v.Kind() == reflect.Map {
+					mapKey := reflect.ValueOf(key)
+					val := v.MapIndex(mapKey)
+					if val.IsValid() {
+						// Try to convert to string
+						if strVal, ok := val.Interface().(string); ok {
+							return strVal, true
+						}
+					}
 				}
+				return "", false
+			}
+
+			// Check if it's a git dependency
+			if gitURL, hasGit := getMapString(dep, "git"); hasGit {
+				// Handle git dependency
+				gitRef := ""
+				if ref, ok := getMapString(dep, "ref"); ok {
+					gitRef = ref
+				}
+
+				// For git deps, we need to clone first to get the manifest
+				// For simplicity in this MVP, we'll add them to a separate list
+				// and install them directly without full transitive resolution
+				gitDeps = append(gitDeps, resolver.ResolvedPackage{
+					Name:     name,
+					Location: "git",
+					Source:   gitURL,
+					GitURL:   gitURL,
+					GitRef:   gitRef,
+					Version:  gitRef, // Use ref as version for display
+				})
+				continue
 			}
 
 			// Registry dependency (version string)

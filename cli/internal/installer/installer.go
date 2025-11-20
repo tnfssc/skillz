@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	SkillzDir = ".skillz"
-	SkillsDir = "skills"
-	CacheDir  = "cache"
-	GlobalDir = "global"
+	SkillzDir   = ".skillz"
+	SkillsDir   = "skills"
+	CacheDir    = "cache"
+	GitCacheDir = "cache/git"
+	GlobalDir   = "global"
 )
 
 // Installer handles skill installation
@@ -37,12 +38,14 @@ func NewInstaller(rootDir string) *Installer {
 	return &Installer{rootDir: rootDir}
 }
 
-// EnsureDirectories creates necessary directory structure
+// EnsureDirectories creates the necessary directory structure for skillz
+// It creates .skillz, .skillz/skills, and .skillz/cache directories
 func (i *Installer) EnsureDirectories() error {
 	dirs := []string{
-		filepath.Join(i.rootDir, SkillzDir),
-		filepath.Join(i.rootDir, SkillzDir, SkillsDir),
-		filepath.Join(i.rootDir, SkillzDir, CacheDir),
+		i.SkillzPath(),
+		i.SkillsPath(),
+		i.CachePath(),
+		i.GitCachePath(),
 	}
 
 	for _, dir := range dirs {
@@ -50,25 +53,34 @@ func (i *Installer) EnsureDirectories() error {
 			return fmt.Errorf("failed to create directory %s: %w", dir, err)
 		}
 	}
-
 	return nil
 }
 
-// SkillsPath returns the path to the skills directory
+// SkillsPath returns the path where skills are installed
 func (i *Installer) SkillsPath() string {
 	return filepath.Join(i.rootDir, SkillzDir, SkillsDir)
 }
 
-// CachePath returns the path to the cache directory
+// SkillzPath returns the root .skillz directory path
+func (i *Installer) SkillzPath() string {
+	return filepath.Join(i.rootDir, SkillzDir)
+}
+
+// CachePath returns the path where tarballs are cached
 func (i *Installer) CachePath() string {
 	return filepath.Join(i.rootDir, SkillzDir, CacheDir)
 }
 
-// IsInstalled checks if a skill is already installed
+// GitCachePath returns the path where git repositories are cached
+func (i *Installer) GitCachePath() string {
+	return filepath.Join(i.rootDir, SkillzDir, GitCacheDir)
+}
+
+// IsInstalled checks if a skill is currently installed
 func (i *Installer) IsInstalled(skillName string) bool {
-	skillPath := filepath.Join(i.SkillsPath(), skillName)
-	_, err := os.Stat(skillPath)
-	return err == nil
+	path := filepath.Join(i.SkillsPath(), skillName)
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
 }
 
 // GetInstalledVersion returns the version of an installed skill

@@ -6,8 +6,9 @@ import (
 	"strings"
 )
 
-// Clone clones a git repository to the specified destination
-// If ref is provided, it checks out that ref (tag, branch, or commit)
+// Clone clones a git repository to the specified destination.
+// If ref is provided, it checks out that ref (tag, branch, or commit).
+// It uses a shallow clone (--depth 1) for efficiency.
 func Clone(url, dest, ref string) error {
 	// Check if git is available
 	if _, err := exec.LookPath("git"); err != nil {
