@@ -1,9 +1,7 @@
 project_name: skillz
 
 before:
-  hooks:
-    - dir: cli
-      cmd: go mod tidy
+  - cd cli && go mod tidy
 
 builds:
   - main: ./cmd/skillz
