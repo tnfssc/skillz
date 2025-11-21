@@ -29,7 +29,7 @@ jobs:
       - name: Setup Database
         run: |
           cd apps/api
-          pnpm run db:migrate
+          pnpm run db:migrate:local
           pnpm run db:seed
 
       - name: Start API Server
