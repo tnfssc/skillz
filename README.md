@@ -28,7 +28,7 @@ mise install
 
 ```bash
 # Install the CLI (Linux/macOS)
-curl -fsSL https://skillz.dev/install.sh | sh
+curl -fsSL https://skillz.lat/install.sh | sh
 
 # Or build from source
 go install github.com/tnfssc/skillz/cli/cmd/skillz@latest
