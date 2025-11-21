@@ -63,6 +63,7 @@ function SkillDetailsPage() {
             </div>
           </div>
           
+          
           {/* Install Card */}
           <div style={{ 
             background: 'var(--surface)', 
@@ -94,6 +95,27 @@ function SkillDetailsPage() {
                 📋
               </button>
             </div>
+            
+            {/* Download Button */}
+            <a 
+              href={latestVersion?.tarballUrl}
+              download
+              style={{
+                display: 'block',
+                background: 'var(--primary)',
+                color: 'white',
+                padding: '0.75rem',
+                borderRadius: '8px',
+                textAlign: 'center',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                cursor: 'pointer'
+              }}
+            >
+              ⬇️ Download v{latestVersion?.version}
+            </a>
+            
             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
               <a href={skill.repository || '#'} style={{ color: 'var(--primary)', textDecoration: 'none', display: 'block', marginBottom: '0.5rem' }}>
                 GitHub Repository ↗
