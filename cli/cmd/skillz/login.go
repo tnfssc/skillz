@@ -5,72 +5,63 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"syscall"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 
 	"github.com/tnfssc/skillz/cli/internal/auth"
-	"github.com/tnfssc/skillz/cli/internal/registry"
 )
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Log in to the Skillz registry",
-	RunE:  runLogin,
+	Long: `Log in to the Skillz registry using an API token.
+
+You can generate an API token from the Skillz web interface.
+Once you have a token, run:
+  skillz login --token <your-token>
+
+Or simply run 'skillz login' and paste the token when prompted.`,
+	RunE: runLogin,
 }
 
 var (
-	loginUsername string
-	loginPassword string
+	loginToken string
 )
 
 func init() {
-	loginCmd.Flags().StringVarP(&loginUsername, "username", "u", "", "Username")
-	loginCmd.Flags().StringVarP(&loginPassword, "password", "p", "", "Password")
+	loginCmd.Flags().StringVarP(&loginToken, "token", "t", "", "API Token")
 	rootCmd.AddCommand(loginCmd)
 }
 
 func runLogin(cmd *cobra.Command, args []string) error {
-	var username, password string
+	var token string
 	var err error
 
-	if loginUsername != "" {
-		username = loginUsername
+	if loginToken != "" {
+		token = loginToken
 	} else {
+		fmt.Println("Please visit https://skillz.dev/auth/token to generate an API token.")
+		fmt.Print("Enter your API Token: ")
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Username: ")
-		username, err = reader.ReadString('\n')
+		token, err = reader.ReadString('\n')
 		if err != nil {
 			return err
 		}
-		username = strings.TrimSpace(username)
+		token = strings.TrimSpace(token)
 	}
 
-	if loginPassword != "" {
-		password = loginPassword
-	} else {
-		fmt.Print("Password: ")
-		bytePassword, err := term.ReadPassword(int(syscall.Stdin))
-		if err != nil {
-			return err
-		}
-		password = string(bytePassword)
-		fmt.Println() // Newline after password input
+	if token == "" {
+		return fmt.Errorf("token is required")
 	}
 
-	// Authenticate
-	fmt.Println("Authenticating...")
-	client := registry.NewClient(registryURL)
-	token, err := client.Login(username, password)
-	if err != nil {
-		return fmt.Errorf("authentication failed: %w", err)
-	}
+	// TODO: Validate token with API?
+	// For now, just save it.
 
 	// Save credentials
 	creds := auth.Credentials{
-		Token:    token,
-		Username: username,
+		Token: token,
+		// Username is not strictly needed for token auth, but maybe we can fetch it later
+		Username: "user", // Placeholder
 	}
 
 	if err := auth.SaveCredentials(creds); err != nil {

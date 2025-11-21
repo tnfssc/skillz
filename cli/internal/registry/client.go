@@ -80,47 +80,7 @@ func (c *Client) GetSkill(name string) (*SkillResponse, error) {
 	return &result, nil
 }
 
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-type LoginResponse struct {
-	Token string `json:"token"`
-	User  struct {
-		Username string `json:"username"`
-	} `json:"user"`
-}
-
-func (c *Client) Login(username, password string) (string, error) {
-	reqBody := LoginRequest{
-		Username: username,
-		Password: password,
-	}
-
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return "", err
-	}
-
-	url := fmt.Sprintf("%s/auth/login", c.BaseURL)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return "", err
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("login failed: %s", resp.Status)
-	}
-
-	var loginResp LoginResponse
-	if err := json.NewDecoder(resp.Body).Decode(&loginResp); err != nil {
-		return "", err
-	}
-
-	return loginResp.Token, nil
-}
+// Login method removed in favor of token-based auth via CLI flags
 
 func (c *Client) Publish(name, version, tarballPath, token string) error {
 	file, err := os.Open(tarballPath)

@@ -2,21 +2,34 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { drizzle } from 'drizzle-orm/d1';
-import { skills, versions, users } from '@skillz/db';
+import { skills, versions, user } from '@skillz/db';
 import { eq, like, desc, and } from 'drizzle-orm';
+import { createAuth } from './auth';
+import { createRedisClient, Ratelimit } from '@skillz/shared';
 
 type Bindings = {
     DB: D1Database;
     BUCKET: R2Bucket;
     VECTORIZE: VectorizeIndex;
     AI: Ai;
+    UPSTASH_REDIS_REST_URL: string;
+    UPSTASH_REDIS_REST_TOKEN: string;
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
 
 // Middleware
 app.use('*', logger());
-app.use('*', cors());
+app.use('*', cors({
+    origin: ['http://localhost:5173', 'https://skillz.dev'], // Adjust as needed
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    exposeHeaders: ['Content-Length'],
+    maxAge: 600,
+    credentials: true,
+}));
 
 // Health check
 app.get('/', (c) => {
@@ -27,46 +40,135 @@ app.get('/', (c) => {
     });
 });
 
-// API v1 routes
-const api = new Hono<{ Bindings: Bindings }>();
-
 // Auth endpoints
-const auth = new Hono<{ Bindings: Bindings }>();
+app.on(['POST', 'GET'], '/api/auth/*', (c) => {
+    const auth = createAuth(c.env);
+    return auth.handler(c.req.raw);
+});
 
-auth.post('/login', async (c) => {
-    const { username, password } = await c.req.json();
+// DEV ONLY: Create test user endpoint
+app.post('/api/dev/create-test-user', async (c) => {
     const db = drizzle(c.env.DB);
-
+    
     try {
-        const user = await db
-            .select()
-            .from(users)
-            .where(eq(users.username, username))
-            .limit(1);
+        // First, delete the test user if it exists (make this truly idempotent)
+        await db.delete(user).where(eq(user.email, 'dev@test.local')).catch(() => {});
+        
+        // Now create a fresh one
+        const signupResponse = await fetch('http://localhost:8787/api/auth/sign-up/email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: 'dev@test.local',
+                password: 'devpassword',
+                name: 'Dev User',
+            }),
+        });
 
-        if (user.length === 0) {
-            return c.json({ error: 'Invalid credentials' }, 401);
+        const signupData = await signupResponse.json();
+
+        if (!signupResponse.ok) {
+            console.error('Signup failed:', signupData);
+            return c.json({ error: signupData.error || 'Signup failed', details: signupData }, 400);
         }
 
-        // TODO: Implement real password verification (bcrypt)
-        // For now, accept any password for seeded users
-
-        // Generate a simple token (mock)
-        const token = `skillz_token_${user[0].username}_${Date.now()}`;
-
-        return c.json({
-            token,
-            user: {
-                username: user[0].username
-            }
-        });
+        return c.json({ success: true, message: 'Test user created!' });
     } catch (error) {
-        console.error('Login failed:', error);
-        return c.json({ error: 'Login failed' }, 500);
+        console.error('Create test user error:', error);
+        return c.json({ error: 'Failed to create test user', details: String(error) }, 500);
     }
 });
 
-app.route('/api/v1/auth', auth);
+// DEV ONLY: Delete test user endpoint
+app.post('/api/dev/delete-test-user', async (c) => {
+    const db = drizzle(c.env.DB);
+    
+    try {
+        await db.delete(user).where(eq(user.email, 'dev@test.local'));
+        return c.json({ success: true, message: 'Test user deleted' });
+    } catch (error) {
+        console.error('Delete test user error:', error);
+        return c.json({ error: 'Failed to delete test user', details: String(error) }, 500);
+    }
+});
+
+// API v1 routes
+const api = new Hono<{ Bindings: Bindings }>();
+
+// Middleware to check auth - supports both session (web) and API keys (CLI)
+const authMiddleware = async (c: any, next: any) => {
+    const auth = createAuth(c.env);
+    
+    // Try to get Authorization header for API key
+    const authHeader = c.req.header('Authorization');
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const apiKey = authHeader.substring(7); // Remove 'Bearer ' prefix
+        
+        // Verify API key with Better Auth
+        const verification = await auth.api.verifyApiKey({
+            body: {
+                key: apiKey,
+                permissions: { api: ['read', 'write'] },
+            },
+        });
+        
+        if (!verification.valid) {
+            return c.json({ error: 'Invalid or expired API key' }, 401);
+        }
+        
+        if (verification.error) {
+            return c.json({ error: 'Failed to verify API key' }, 500);
+        }
+        
+        // Set user context from API key (key contains userId)
+        // We'll need to fetch user details if needed
+        c.set('apiKey', verification.key);
+        c.set('userId', verification.key?.userId);
+        await next();
+        return;
+    }
+    
+    // Otherwise, try session-based auth (for web)
+    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    if (!session) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+    c.set('user', session.user);
+    c.set('session', session.session);
+    await next();
+};
+
+// Rate limiting middleware
+const rateLimitMiddleware = async (c: any, next: any) => {
+    if (!c.env.UPSTASH_REDIS_REST_URL || !c.env.UPSTASH_REDIS_REST_TOKEN) {
+        // Skip if not configured (e.g. local dev without redis)
+        await next();
+        return;
+    }
+    const redis = createRedisClient(c.env.UPSTASH_REDIS_REST_URL, c.env.UPSTASH_REDIS_REST_TOKEN);
+    const ratelimit = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, "10 s"),
+        analytics: true,
+    });
+    const ip = c.req.header('CF-Connecting-IP') || '127.0.0.1';
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+        return c.json({ error: 'Too Many Requests' }, 429);
+    }
+    await next();
+};
+
+api.use('*', rateLimitMiddleware);
+
+// Me endpoint
+api.get('/me', authMiddleware, async (c) => {
+    const user = c.get('user');
+    return c.json(user);
+});
 
 // Skills endpoints
 api.get('/skills', async (c) => {
@@ -179,11 +281,9 @@ api.get('/skills/:name/:version', async (c) => {
     }
 });
 
-api.post('/skills', async (c) => {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer skillz_token_')) {
-        return c.json({ error: 'Unauthorized' }, 401);
-    }
+api.post('/skills', authMiddleware, async (c) => {
+    // TODO: Use c.get('user') to get authenticated user
+    // const user = c.get('user');
 
     try {
         const body = await c.req.parseBody();
@@ -194,18 +294,6 @@ api.post('/skills', async (c) => {
         if (!name || !version || !tarball) {
             return c.json({ error: 'Missing required fields' }, 400);
         }
-
-        // Save tarball (mock storage)
-        // In a real app, we'd upload to R2
-        // Here we just acknowledge receipt because we can't easily write to disk in Worker environment
-        // BUT since we are running locally with `wrangler dev`, we can't write to disk easily either without node compat.
-        // So for this "mock", we will just update the DB and point the URL to the /tarballs endpoint
-        // assuming the user will "upload" it there manually or we just mock the download too.
-
-        // Wait, if I don't save it, `install` won't work for the new package unless I mock the download route 
-        // to return this specific file.
-        // I can store the file in memory or D1? No, D1 is for data.
-        // I can store it in a global Map for the session? Yes!
 
         // Calculate SHA256 integrity
         const tarballBuffer = await tarball.arrayBuffer();
@@ -231,8 +319,8 @@ api.post('/skills', async (c) => {
             const result = await db.insert(skills).values({
                 name,
                 description: 'Published via CLI',
-                author: 'alice', // Mock author
-                authorId: 1,
+                author: 'alice', // TODO: Use authenticated user name
+                authorId: 'user_1', // TODO: Use authenticated user ID
                 createdAt: new Date(),
                 updatedAt: new Date()
             }).returning({ id: skills.id });
@@ -259,30 +347,26 @@ api.post('/skills', async (c) => {
     }
 });
 
-api.delete('/skills/:name/:version', async (c) => {
-    // TODO: Implement authentication
+api.delete('/skills/:name/:version', authMiddleware, async (c) => {
     // TODO: Implement unpublish logic
     return c.json({ message: 'Not implemented yet' }, 501);
 });
 
 // Users endpoints
 api.get('/users/:username', async (c) => {
+    // TODO: Update this to search by name or email since username is gone
+    // Or assume 'name' is username
     const username = c.req.param('username');
     const db = drizzle(c.env.DB);
 
     try {
-        const user = await db
-            .select({
-                id: users.id,
-                username: users.username,
-                email: users.email,
-                createdAt: users.createdAt
-            })
-            .from(users)
-            .where(eq(users.username, username))
+        const foundUser = await db
+            .select()
+            .from(user)
+            .where(eq(user.name, username))
             .limit(1);
 
-        if (user.length === 0) {
+        if (foundUser.length === 0) {
             return c.json({ error: 'User not found' }, 404);
         }
 
@@ -290,10 +374,10 @@ api.get('/users/:username', async (c) => {
         const userSkills = await db
             .select()
             .from(skills)
-            .where(eq(skills.authorId, user[0].id));
+            .where(eq(skills.authorId, foundUser[0].id));
 
         return c.json({
-            ...user[0],
+            ...foundUser[0],
             skills: userSkills
         });
     } catch (error) {
@@ -337,7 +421,7 @@ api.get('/stats', async (c) => {
     try {
         // TODO: Implement proper aggregation
         const totalSkills = await db.select().from(skills);
-        const totalUsers = await db.select().from(users);
+        const totalUsers = await db.select().from(user);
 
         return c.json({
             totalSkills: totalSkills.length,

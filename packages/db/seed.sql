@@ -7,62 +7,50 @@ DELETE FROM ratings;
 DELETE FROM tags;
 DELETE FROM versions;
 DELETE FROM skills;
-DELETE FROM users;
+DELETE FROM user;
+
+-- Seed data for Skillz Registry
 
 -- Users
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES
-(1, 'alice', 'alice@example.com', '$2a$10$dummy_hash_1', 1700000000),
-(2, 'bob', 'bob@example.com', '$2a$10$dummy_hash_2', 1700000100),
-(3, 'carol', 'carol@example.com', '$2a$10$dummy_hash_3', 1700000200);
+INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUES 
+('user_1', 'alice', 'alice@example.com', 1, 1700000000, 1700000000),
+('user_2', 'bob', 'bob@example.com', 1, 1700000000, 1700000000);
 
 -- Skills
 INSERT INTO skills (id, name, description, author, author_id, repository, homepage, license, created_at, updated_at) VALUES
-(1, 'data-analyzer', 'Powerful data analysis and visualization skill for Claude', 'alice', 1, 'https://github.com/alice/data-analyzer', 'https://skills.example.com/data-analyzer', 'MIT', 1700100000, 1700500000),
-(2, 'code-reviewer', 'Automated code review and quality analysis', 'bob', 2, 'https://github.com/bob/code-reviewer', 'https://skills.example.com/code-reviewer', 'Apache-2.0', 1700200000, 1700600000),
-(3, 'document-generator', 'Generate professional documents from templates', 'alice', 1, 'https://github.com/alice/document-generator', 'https://skills.example.com/document-generator', 'MIT', 1700300000, 1700700000),
-(4, 'api-tester', 'Test and validate REST APIs with ease', 'carol', 3, 'https://github.com/carol/api-tester', 'https://skills.example.com/api-tester', 'BSD-3', 1700400000, 1700800000),
-(5, 'excel-wizard', 'Advanced Excel spreadsheet creation and manipulation', 'bob', 2, 'https://github.com/bob/excel-wizard', 'https://skills.example.com/excel-wizard', 'MIT', 1700450000, 1700850000);
+(1, 'data-analyzer', 'Powerful data analysis and visualization skill for Claude', 'alice', 'user_1', 'https://github.com/alice/data-analyzer', 'https://skills.example.com/data-analyzer', 'MIT', 1700100000, 1700500000),
+(2, 'code-formatter', 'Automated code formatting and linting skill', 'bob', 'user_2', 'https://github.com/bob/code-formatter', NULL, 'Apache-2.0', 1700200000, 1700200000),
+(3, 'weather-reporter', 'Real-time weather updates and forecasts', 'alice', 'user_1', 'https://github.com/alice/weather-reporter', NULL, 'ISC', 1700300000, 1700300000),
+(4, 'image-generator', 'Generate images from text descriptions using AI', 'alice', 'user_1', 'https://github.com/alice/image-generator', NULL, 'MIT', 1700400000, 1700400000),
+(5, 'translator-pro', 'Professional translation skill supporting 50+ languages', 'bob', 'user_2', 'https://github.com/bob/translator-pro', 'https://translator.example.com', 'GPL-3.0', 1700500000, 1700500000);
 
--- Versions
 -- Versions
 INSERT INTO versions (id, skill_id, version, description, tarball_url, integrity, manifest, created_at) VALUES
-(1, 1, '1.0.0', 'Initial release', 'http://localhost:8787/api/v1/tarballs/data-analyzer/data-analyzer-1.0.0.tgz', 'sha256-abc123', '{"name": "data-analyzer", "version": "1.0.0"}', 1700100000),
-(2, 1, '1.1.0', 'Added chart support', 'http://localhost:8787/api/v1/tarballs/data-analyzer/data-analyzer-1.1.0.tgz', 'sha256-def456', '{"name": "data-analyzer", "version": "1.1.0"}', 1700300000),
-(3, 1, '1.2.0', 'Performance improvements', 'http://localhost:8787/api/v1/tarballs/data-analyzer/data-analyzer-1.2.0.tgz', 'sha256-ghi789', '{"name": "data-analyzer", "version": "1.2.0"}', 1700500000),
-(4, 2, '1.0.0', 'First version', 'http://localhost:8787/api/v1/tarballs/code-reviewer/code-reviewer-1.0.0.tgz', 'sha256-jkl012', '{"name": "code-reviewer", "version": "1.0.0"}', 1700200000),
-(5, 2, '1.0.1', 'Bug fixes', 'http://localhost:8787/api/v1/tarballs/code-reviewer/code-reviewer-1.0.1.tgz', 'sha256-mno345', '{"name": "code-reviewer", "version": "1.0.1"}', 1700400000),
-(6, 3, '0.9.0', 'Beta release', 'http://localhost:8787/api/v1/tarballs/document-generator/document-generator-0.9.0.tgz', 'sha256-pqr678', '{"name": "document-generator", "version": "0.9.0"}', 1700300000),
-(7, 3, '1.0.0', 'Official release', 'http://localhost:8787/api/v1/tarballs/document-generator/document-generator-1.0.0.tgz', 'sha256-stu901', '{"name": "document-generator", "version": "1.0.0"}', 1700700000),
-(8, 4, '1.0.0', 'Initial release', 'http://localhost:8787/api/v1/tarballs/api-tester/api-tester-1.0.0.tgz', 'sha256-vwx234', '{"name": "api-tester", "version": "1.0.0"}', 1700400000),
-(9, 5, '2.0.0', 'Major update', 'http://localhost:8787/api/v1/tarballs/excel-wizard/excel-wizard-2.0.0.tgz', 'sha256-yz1234', '{"name": "excel-wizard", "version": "2.0.0"}', 1700850000);
+(1, 1, '1.0.0', 'Initial release', 'https://registry.skillz.dev/tarballs/data-analyzer-1.0.0.tgz', 'sha256-hash1', '{"name": "data-analyzer", "version": "1.0.0"}', 1700100000),
+(2, 1, '1.1.0', 'Added visualization features', 'https://registry.skillz.dev/tarballs/data-analyzer-1.1.0.tgz', 'sha256-hash2', '{"name": "data-analyzer", "version": "1.1.0"}', 1700150000),
+(3, 1, '2.0.0', 'Major update with new engine', 'https://registry.skillz.dev/tarballs/data-analyzer-2.0.0.tgz', 'sha256-hash3', '{"name": "data-analyzer", "version": "2.0.0"}', 1700500000),
+(4, 2, '0.1.0', 'Beta release', 'https://registry.skillz.dev/tarballs/code-formatter-0.1.0.tgz', 'sha256-hash4', '{"name": "code-formatter", "version": "0.1.0"}', 1700200000),
+(5, 3, '1.0.0', 'First stable release', 'https://registry.skillz.dev/tarballs/weather-reporter-1.0.0.tgz', 'sha256-hash5', '{"name": "weather-reporter", "version": "1.0.0"}', 1700300000),
+(6, 3, '1.0.1', 'Bug fixes', 'https://registry.skillz.dev/tarballs/weather-reporter-1.0.1.tgz', 'sha256-hash6', '{"name": "weather-reporter", "version": "1.0.1"}', 1700350000),
+(7, 4, '1.0.0', 'Initial release', 'https://registry.skillz.dev/tarballs/image-generator-1.0.0.tgz', 'sha256-hash7', '{"name": "image-generator", "version": "1.0.0"}', 1700400000),
+(8, 5, '1.0.0', 'Initial release', 'https://registry.skillz.dev/tarballs/translator-pro-1.0.0.tgz', 'sha256-hash8', '{"name": "translator-pro", "version": "1.0.0"}', 1700500000);
 
 -- Tags
-INSERT INTO tags (id, skill_id, tag) VALUES
-(1, 1, 'data'),
-(2, 1, 'analytics'),
-(3, 1, 'visualization'),
-(4, 2, 'code'),
-(5, 2, 'review'),
-(6, 2, 'quality'),
-(7, 3, 'document'),
-(8, 3, 'generation'),
-(9, 3, 'pdf'),
-(10, 4, 'api'),
-(11, 4, 'testing'),
-(12, 4, 'automation'),
-(13, 5, 'excel'),
-(14, 5, 'spreadsheet'),
-(15, 5, 'data');
+INSERT INTO tags (skill_id, tag) VALUES
+(1, 'data'), (1, 'visualization'), (1, 'analysis'),
+(2, 'dev-tool'), (2, 'formatting'),
+(3, 'weather'), (3, 'news'),
+(4, 'ai'), (4, 'image'), (4, 'generation'),
+(5, 'translation'), (5, 'language');
 
 -- Ratings
 INSERT INTO ratings (id, skill_id, user_id, rating, review, created_at) VALUES
-(1, 1, 2, 5, 'Excellent data analysis capabilities!', 1700200000),
-(2, 1, 3, 4, 'Very useful, could use more chart types', 1700300000),
-(3, 2, 1, 5, 'Saves so much time on code reviews', 1700400000),
-(4, 2, 3, 5, 'Best code review skill I have used', 1700500000),
-(5, 3, 2, 4, 'Great for document generation', 1700600000),
-(6, 4, 1, 5, 'API testing made easy', 1700700000),
-(7, 5, 3, 5, 'Excel automation at its finest', 1700800000);
+(1, 1, 'user_2', 4, 'Very useful, could use more chart types', 1700300000),
+(2, 2, 'user_1', 5, 'Saves so much time on code reviews', 1700400000),
+(3, 2, 'user_2', 5, 'Best code review skill I have used', 1700500000),
+(4, 3, 'user_2', 4, 'Great for document generation', 1700600000),
+(5, 4, 'user_2', 5, 'API testing made easy', 1700700000),
+(6, 5, 'user_1', 5, 'Excel automation at its finest', 1700800000);
 
 -- Downloads (sample data for past week)
 INSERT INTO downloads (id, version_id, count, date) VALUES
@@ -100,13 +88,4 @@ INSERT INTO downloads (id, version_id, count, date) VALUES
 (25, 8, 95, '2024-11-14'),
 (26, 8, 100, '2024-11-15'),
 (27, 8, 110, '2024-11-16'),
-(28, 8, 120, '2024-11-17'),
-
--- excel-wizard (v2.0.0 -> id 9)
-(29, 9, 60, '2024-11-11'),
-(30, 9, 70, '2024-11-12'),
-(31, 9, 75, '2024-11-13'),
-(32, 9, 80, '2024-11-14'),
-(33, 9, 90, '2024-11-15'),
-(34, 9, 100, '2024-11-16'),
-(35, 9, 110, '2024-11-17');
+(28, 8, 120, '2024-11-17');

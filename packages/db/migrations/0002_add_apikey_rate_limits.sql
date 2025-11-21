@@ -1,0 +1,13 @@
+ALTER TABLE `apikey` ADD `metadata` text;
+ALTER TABLE `apikey` ADD `rate_limit_enabled` integer DEFAULT 1 NOT NULL;
+ALTER TABLE `apikey` ADD `rate_limit_max` integer DEFAULT 10 NOT NULL;
+ALTER TABLE `apikey` ADD `rate_limit_time_window` integer DEFAULT 86400000 NOT NULL;
+ALTER TABLE `apikey` ADD `refill_amount` integer;
+ALTER TABLE `apikey` ADD `refill_interval` integer;
+ALTER TABLE `apikey` ADD `remaining` integer;
+ALTER TABLE `apikey` ADD `request_count` integer DEFAULT 0 NOT NULL;
+ALTER TABLE `apikey` ADD `last_refill_at` integer;
+ALTER TABLE `apikey` ADD `last_request` integer;
+ALTER TABLE `apikey` ADD `prefix` text;
+ALTER TABLE `apikey` ADD `start` text;
+CREATE UNIQUE INDEX `apikey_prefix_index` ON `apikey` (`prefix`);

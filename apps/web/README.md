@@ -1,102 +1,73 @@
-# 🌐 Web App - Skillz Registry
+# React + TypeScript + Vite
 
-Beautiful, server-side rendered web interface for browsing Claude Skills built with Hono and Cloudflare Workers.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-### ✅ Implemented Pages
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-**Homepage** (`/`)
-- Hero section with search
-- Trending skills (by downloads)
-- Latest skills
-- Getting started guide with code snippets
-- Fully responsive design
+## React Compiler
 
-**Browse Skills** (`/skills`)
-- List all skills
-- Search functionality
-- Paginated results
-- Beautiful card layout
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-**Skill Detail** (`/skills/:name`)
-- Complete skill information
-- Version history
-- Installation instructions
-- Tags and categorization
-- User ratings and reviews
-- Download statistics
-- Related links (repository, homepage)
-- Author information
+## Expanding the ESLint configuration
 
-**Documentation** (`/docs`)
-- Getting started guide
-- Command reference
-- Configuration documentation
-- Code examples
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-### 🎨 Design Features
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-- **Modern Dark Theme** - Beautiful gradient-based UI
-- **Glassmorphism** - Translucent cards with blur effects
-- **Responsive** - Works perfectly on mobile, tablet, desktop
-- **Fast SSR** - Server-side rendering at the edge
-- **Type-safe** - Full TypeScript throughout
-- **Accessible** - WCAG compliant
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-### 🚀 Running Locally
-
-```bash
-# Install dependencies
-pnpm install
-
-# Start dev server
-cd apps/web
-pnpm dev
-
-# Build and deploy
-pnpm deploy
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-### 📊 Database Integration
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-The web app connects to the same D1 database as the API, displaying:
-- Skills with all metadata
-- Version history
-- User ratings and reviews
-- Download statistics
-- Tags and categorization
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-### 🔗 Seed Data
-
-Demo skills included:
-1. **data-analyzer** - Data analysis and visualization
-2. **code-reviewer** - Automated code review
-3. **document-generator** - Document generation from templates
-4. **api-tester** - REST API testing
-5. **excel-wizard** - Excel automation
-
-Each with multiple versions, ratings, and download stats!
-
-### 📝 TODO
-
-- [ ] User profile pages
-- [ ] Publishing interface
-- [ ] Skill comparison
-- [ ] Advanced search filters
-- [ ] Infinite scroll pagination
-- [ ] Dark/light mode toggle
-
-## Tech Stack
-
-- **Framework**: Hono (ultra-fast web framework)
-- **Runtime**: Cloudflare Workers (edge computing)
-- **Database**: D1 with Drizzle ORM
-- **Styling**: Inline CSS (no build step!)
-- **Type Safety**: TypeScript JSX
-
-## Performance
-
-- **TTFB**: <50ms (edge-rendered globally)
-- **Bundle Size**: ~12kb (Hono is tiny!)
-- **Lighthouse**: 100/100 (performance, accessibility)
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
