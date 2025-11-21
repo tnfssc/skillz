@@ -195,14 +195,16 @@ func runInit() error {
 		Dependencies:    &config.Dependencies{},
 		DevDependencies: &config.Dependencies{},
 		Scripts:         config.Scripts{},
-		Hooks:           &config.Hooks{},
+		// Don't initialize Hooks - let it be nil so it's omitted
 		Skill: &config.SkillConfig{
 			Main:     main,
 			Requires: []string{},
 			Exports:  []string{},
 		},
+		// Set constraints only if we have non-empty values
 		Constraints: &config.Constraints{
 			OS: []string{"linux", "darwin", "windows"},
+			// ClaudeVersion is nil, will be omitted
 		},
 	}
 
@@ -282,11 +284,23 @@ func runAdd(target string, isDev bool) error {
 	} else {
 		// Package from registry
 		skillName = target
-		// TODO: Fetch latest version from registry
-		// For now, just use "latest"
-		depValue = "latest"
 
-		fmt.Printf("Adding registry dependency: %s@latest\n", skillName)
+		// Fetch latest version from registry
+		client := registry.NewClient(registryURL)
+		skillInfo, err := client.GetSkill(skillName)
+		if err != nil {
+			return fmt.Errorf("failed to fetch skill from registry: %w", err)
+		}
+
+		if len(skillInfo.Versions) == 0 {
+			return fmt.Errorf("no versions found for skill: %s", skillName)
+		}
+
+		// Use the latest version (first in the array, since it's sorted by createdAt desc)
+		latestVersion := skillInfo.Versions[0].Version
+		depValue = "^" + latestVersion // Use caret range for semver
+
+		fmt.Printf("Adding registry dependency: %s@%s\n", skillName, latestVersion)
 	}
 
 	// Initialize dependencies maps if nil

@@ -56,10 +56,10 @@ type Scripts map[string]string
 
 // Hooks defines lifecycle hooks
 type Hooks struct {
-	PreInstall  string `toon:"pre-install,omitempty"`
-	PostInstall string `toon:"post-install,omitempty"`
-	PreUpdate   string `toon:"pre-update,omitempty"`
-	PostUpdate  string `toon:"post-update,omitempty"`
+	PreInstall  *string `toon:"pre-install,omitempty"`
+	PostInstall *string `toon:"post-install,omitempty"`
+	PreUpdate   *string `toon:"pre-update,omitempty"`
+	PostUpdate  *string `toon:"post-update,omitempty"`
 }
 
 // SkillConfig defines skill-specific configuration
@@ -72,13 +72,13 @@ type SkillConfig struct {
 // Constraints defines platform and version requirements
 type Constraints struct {
 	OS            []string `toon:"os,omitempty"`
-	ClaudeVersion string   `toon:"claude-version,omitempty"`
+	ClaudeVersion *string  `toon:"claude-version,omitempty"`
 }
 
 // Integrity holds security verification data
 type Integrity struct {
-	Checksum  string `toon:"checksum,omitempty"`
-	Signature string `toon:"signature,omitempty"`
+	Checksum  *string `toon:"checksum,omitempty"`
+	Signature *string `toon:"signature,omitempty"`
 }
 
 // LockFile represents skillz.lock content

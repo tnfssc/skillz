@@ -21,6 +21,20 @@ export interface SkillVersion {
   createdAt: string;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserProfile extends User {
+  skills: Skill[];
+}
+
 export interface SkillsResponse {
   skills: Skill[];
   total: number;
@@ -48,6 +62,14 @@ export const api = {
     const response = await fetch(`${API_BASE}/skills/${name}`);
     if (!response.ok) {
       throw new Error('Failed to fetch skill');
+    }
+    return response.json();
+  },
+
+  async fetchUser(username: string): Promise<UserProfile> {
+    const response = await fetch(`${API_BASE}/users/${username}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
     }
     return response.json();
   }
