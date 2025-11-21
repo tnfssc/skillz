@@ -1,6 +1,12 @@
 name = "skillz-api"
 main = "src/index.ts"
 compatibility_date = "2024-11-18"
+workers_dev = true
+
+[route]
+custom_domain = true
+pattern = "api.skillz.lat"
+zone_name = "skillz.lat"
 
 [observability]
 enabled = true
@@ -8,7 +14,7 @@ enabled = true
 [[d1_databases]]
 binding = "DB"
 database_name = "skillz-registry"
-database_id = "YOUR_D1_DATABASE_ID" # Replace after creating D1 database
+database_id = "1a3b4fcf-c920-400e-97fb-9b060c3dd6f4"
 migrations_dir = "../../packages/db/migrations"
 
 [[r2_buckets]]
@@ -22,20 +28,5 @@ index_name = "skillz-embeddings"
 [ai]
 binding = "AI"
 
-# Production Environment
-[env.production]
-name = "skillz-api-prod"
-routes = ["api.skillz.lat/*"]
-
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "skillz-registry-prod"
-database_id = "PROD_D1_DATABASE_ID" # Replace with production DB ID
-migrations_dir = "../../packages/db/migrations"
-
-[[env.production.r2_buckets]]
-binding = "BUCKET"
-bucket_name = "skillz-packages-prod"
-
-[env.production.vars]
+[vars]
 ENVIRONMENT = "production"

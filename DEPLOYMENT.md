@@ -13,61 +13,33 @@ This guide describes how to deploy the Skillz platform (API and Web) to Cloudfla
 
 The API is a Cloudflare Worker using D1 (Database) and R2 (Storage).
 
-### Step 1: Create Resources
+### Step 1: Set Secrets
 
-```bash
-# Create D1 Database
-wrangler d1 create skillz-registry-prod
-
-# Create R2 Bucket
-wrangler r2 bucket create skillz-packages-prod
-```
-
-### Step 2: Update Configuration
-
-Edit `apps/api/wrangler.toml` and update the `[env.production]` section with your new resource IDs:
-
-```toml
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "skillz-registry-prod"
-database_id = "<YOUR_GENERATED_D1_ID>" # Paste ID from step 1
-
-[[env.production.r2_buckets]]
-binding = "BUCKET"
-bucket_name = "skillz-packages-prod"
-```
-
-### Step 3: Set Secrets
-
-Set the required production secrets:
-
-```bash
-# Google OAuth
-wrangler secret put GOOGLE_CLIENT_ID --env production
-wrangler secret put GOOGLE_CLIENT_SECRET --env production
-
-# Upstash Redis (for Rate Limiting)
-wrangler secret put UPSTASH_REDIS_REST_URL --env production
-wrangler secret put UPSTASH_REDIS_REST_TOKEN --env production
-```
-
-### Step 4: Migrate Database
-
-Apply the database schema to production:
+Set the required secrets:
 
 ```bash
 cd apps/api
-pnpm run db:migrate:prod
+
+# Google OAuth
+wrangler secret put GOOGLE_CLIENT_ID
+wrangler secret put GOOGLE_CLIENT_SECRET
+
+# Upstash Redis (for Rate Limiting)
+wrangler secret put UPSTASH_REDIS_REST_URL
+wrangler secret put UPSTASH_REDIS_REST_TOKEN
 ```
 
-### Step 5: Deploy
+### Step 2: Deploy
+
+The first deploy will automatically provision the D1 database and R2 bucket:
 
 ```bash
 pnpm run deploy
 # or from root:
 pnpm run deploy
 ```
+
+> **Note**: The D1 database ID and R2 bucket name are already configured in `wrangler.toml`.
 
 ## 2. Web Deployment (`apps/web`)
 

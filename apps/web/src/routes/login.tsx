@@ -27,7 +27,7 @@ function LoginPage() {
         method: 'POST',
       });
 
-      const data = await response.json();
+      const data = await response.json() as { error?: string };
 
       if (!response.ok) {
         setError(data.error || 'Failed to create test user');
@@ -65,7 +65,7 @@ function LoginPage() {
         credentials: 'include',
       });
 
-      const data = await response.json();
+      const data = await response.json() as { error?: { message?: string }; message?: string; user?: object };
       console.log('Sign in result:', data);
 
       if (!response.ok) {
