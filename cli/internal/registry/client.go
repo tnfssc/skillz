@@ -41,14 +41,30 @@ func NewClient(baseURL string) *Client {
 }
 
 type SkillResponse struct {
-	Skill    SkillMeta     `json:"skill"`
-	Versions []VersionMeta `json:"versions"`
+	ID          int           `json:"id"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Author      string        `json:"author"`
+	AuthorID    string        `json:"authorId"`
+	Repository  *string       `json:"repository"`
+	Homepage    *string       `json:"homepage"`
+	License     *string       `json:"license"`
+	CreatedAt   string        `json:"createdAt"`
+	UpdatedAt   string        `json:"updatedAt"`
+	Versions    []VersionMeta `json:"versions"`
 }
 
 type SkillMeta struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Author      string `json:"author"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Author      string  `json:"author"`
+	AuthorID    string  `json:"authorId"`
+	Repository  *string `json:"repository"`
+	Homepage    *string `json:"homepage"`
+	License     *string `json:"license"`
+	CreatedAt   string  `json:"createdAt"`
+	UpdatedAt   string  `json:"updatedAt"`
 }
 
 type VersionMeta struct {
@@ -74,6 +90,34 @@ func (c *Client) GetSkill(name string) (*SkillResponse, error) {
 	}
 
 	var result SkillResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+type SearchResult struct {
+	Skills []SkillMeta `json:"skills"`
+	Total  int         `json:"total"`
+}
+
+func (c *Client) SearchSkills(query string) (*SearchResult, error) {
+	url := fmt.Sprintf("%s/skills", c.BaseURL)
+	if query != "" {
+		url = fmt.Sprintf("%s?q=%s", url, query)
+	}
+
+	resp, err := c.HTTPClient.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("registry error: %s", resp.Status)
+	}
+
+	var result SearchResult
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
 	}

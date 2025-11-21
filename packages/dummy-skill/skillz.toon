@@ -1,0 +1,8 @@
+manifest-version: "1"
+name: dummy-skill
+version: 0.0.3
+description: A dummy skill for testing the details page. It has a longer description to test the layout.
+author: Dev User
+license: MIT
+skill:
+  main: index.ts

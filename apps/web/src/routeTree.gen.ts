@@ -14,6 +14,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SkillsIndexRouteImport } from './routes/skills/index'
+import { Route as SkillsNameRouteImport } from './routes/skills/$name'
 
 const SkillsRoute = SkillsRouteImport.update({
   id: '/skills',
@@ -40,20 +42,33 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkillsIndexRoute = SkillsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SkillsRoute,
+} as any)
+const SkillsNameRoute = SkillsNameRouteImport.update({
+  id: '/$name',
+  path: '/$name',
+  getParentRoute: () => SkillsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/login': typeof LoginRoute
-  '/skills': typeof SkillsRoute
+  '/skills': typeof SkillsRouteWithChildren
+  '/skills/$name': typeof SkillsNameRoute
+  '/skills/': typeof SkillsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/login': typeof LoginRoute
-  '/skills': typeof SkillsRoute
+  '/skills/$name': typeof SkillsNameRoute
+  '/skills': typeof SkillsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +76,31 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/docs': typeof DocsRoute
   '/login': typeof LoginRoute
-  '/skills': typeof SkillsRoute
+  '/skills': typeof SkillsRouteWithChildren
+  '/skills/$name': typeof SkillsNameRoute
+  '/skills/': typeof SkillsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/docs' | '/login' | '/skills'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/docs'
+    | '/login'
+    | '/skills'
+    | '/skills/$name'
+    | '/skills/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/docs' | '/login' | '/skills'
-  id: '__root__' | '/' | '/dashboard' | '/docs' | '/login' | '/skills'
+  to: '/' | '/dashboard' | '/docs' | '/login' | '/skills/$name' | '/skills'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/docs'
+    | '/login'
+    | '/skills'
+    | '/skills/$name'
+    | '/skills/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,7 +108,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DocsRoute: typeof DocsRoute
   LoginRoute: typeof LoginRoute
-  SkillsRoute: typeof SkillsRoute
+  SkillsRoute: typeof SkillsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -116,15 +148,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skills/': {
+      id: '/skills/'
+      path: '/'
+      fullPath: '/skills/'
+      preLoaderRoute: typeof SkillsIndexRouteImport
+      parentRoute: typeof SkillsRoute
+    }
+    '/skills/$name': {
+      id: '/skills/$name'
+      path: '/$name'
+      fullPath: '/skills/$name'
+      preLoaderRoute: typeof SkillsNameRouteImport
+      parentRoute: typeof SkillsRoute
+    }
   }
 }
+
+interface SkillsRouteChildren {
+  SkillsNameRoute: typeof SkillsNameRoute
+  SkillsIndexRoute: typeof SkillsIndexRoute
+}
+
+const SkillsRouteChildren: SkillsRouteChildren = {
+  SkillsNameRoute: SkillsNameRoute,
+  SkillsIndexRoute: SkillsIndexRoute,
+}
+
+const SkillsRouteWithChildren =
+  SkillsRoute._addFileChildren(SkillsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   DocsRoute: DocsRoute,
   LoginRoute: LoginRoute,
-  SkillsRoute: SkillsRoute,
+  SkillsRoute: SkillsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

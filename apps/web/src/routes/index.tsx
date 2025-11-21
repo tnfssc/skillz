@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { api, type Skill } from '../lib/api';
 
 export const Route = createFileRoute('/')({
@@ -78,25 +78,32 @@ function HomePage() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {trendingSkills.map((skill) => (
-              <div
+              <Link
                 key={skill.id}
-                style={{
-                  background: 'var(--surface)',
-                  padding: '1.5rem',
-                  borderRadius: '12px',
-                  border: '1px solid var(--border)',
-                  cursor: 'pointer',
-                }}
+                to="/skills/$name"
+                params={{ name: skill.name }}
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{skill.name}</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                  <span>by {skill.author}</span>
-                  <span>{new Date(skill.createdAt).toLocaleDateString()}</span>
+                <div
+                  style={{
+                    background: 'var(--surface)',
+                    padding: '1.5rem',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border)',
+                    cursor: 'pointer',
+                    height: '100%',
+                  }}
+                >
+                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{skill.name}</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    <span>by {skill.author}</span>
+                    <span>{new Date(skill.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p style={{ lineHeight: '1.5', color: 'var(--text-secondary)' }}>
+                    {skill.description || 'No description provided.'}
+                  </p>
                 </div>
-                <p style={{ lineHeight: '1.5', color: 'var(--text-secondary)' }}>
-                  {skill.description || 'No description provided.'}
-                </p>
-              </div>
+              </Link>
             ))}
           </div>
         )}

@@ -592,12 +592,61 @@ func runList() error {
 
 func runSearch(query string) error {
 	fmt.Printf("🔍 Searching for '%s'...\n", query)
-	return fmt.Errorf("not implemented yet - requires registry API")
+
+	client := registry.NewClient(registryURL)
+	result, err := client.SearchSkills(query)
+	if err != nil {
+		return fmt.Errorf("search failed: %w", err)
+	}
+
+	if len(result.Skills) == 0 {
+		fmt.Println("\nNo skills found.")
+		return nil
+	}
+
+	fmt.Printf("\nFound %d skill(s):\n\n", result.Total)
+
+	for _, skill := range result.Skills {
+		fmt.Printf("  📦 %s\n", skill.Name)
+		if skill.Description != "" {
+			fmt.Printf("     %s\n", skill.Description)
+		}
+		if skill.Author != "" {
+			fmt.Printf("     by %s\n", skill.Author)
+		}
+		fmt.Println()
+	}
+
+	return nil
 }
 
 func runInfo(skillName string) error {
-	fmt.Printf("ℹ️  Information about %s:\n", skillName)
-	return fmt.Errorf("not implemented yet - requires registry API")
+	fmt.Printf("ℹ️  Information about %s:\n\n", skillName)
+
+	client := registry.NewClient(registryURL)
+	result, err := client.GetSkill(skillName)
+	if err != nil {
+		return fmt.Errorf("failed to get skill info: %w", err)
+	}
+
+	// Display skill metadata
+	fmt.Printf("Name:        %s\n", result.Name)
+	fmt.Printf("Author:      %s\n", result.Author)
+	fmt.Printf("Description: %s\n\n", result.Description)
+
+	// Display versions
+	if len(result.Versions) > 0 {
+		fmt.Println("Versions:")
+		for _, v := range result.Versions {
+			fmt.Printf("  • %s (published %s)\n", v.Version, v.CreatedAt)
+		}
+		fmt.Println()
+	}
+
+	// Installation instructions
+	fmt.Printf("Install:\n  skillz add %s\n", skillName)
+
+	return nil
 }
 
 func mustGetwd() string {
