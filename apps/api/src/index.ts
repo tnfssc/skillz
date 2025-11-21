@@ -30,7 +30,7 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Middleware
 app.use('*', logger());
 app.use('*', cors({
-    origin: ['http://localhost:5173', 'https://skillz.dev'], // Adjust as needed
+    origin: ['http://localhost:5173', 'https://skillz.lat', 'https://skillz.dev'], // Adjust as needed
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['POST', 'GET', 'OPTIONS'],
     exposeHeaders: ['Content-Length'],

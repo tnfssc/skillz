@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 import { signIn } from '../lib/auth';
 
@@ -7,15 +7,19 @@ export const Route = createFileRoute('/login')({
 });
 
 function LoginPage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [email, setEmail] = React.useState('dev@test.local');
   const [password, setPassword] = React.useState('devpassword');
   const [error, setError] = React.useState('');
   const [isCreatingUser, setIsCreatingUser] = React.useState(false);
 
   const handleGoogleSignIn = async () => {
-    await signIn.social({ provider: 'google', callbackURL: '/dashboard' });
-    navigate({ to: '/dashboard' });
+    await signIn.social({ 
+      provider: 'google', 
+      callbackURL: `${window.location.origin}/dashboard` 
+    });
+    // Navigate is handled by the redirect, but we keep this for client-side transitions if needed
+    // navigate({ to: '/dashboard' });
   };
 
   const handleCreateTestUser = async () => {

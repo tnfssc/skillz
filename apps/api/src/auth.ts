@@ -15,13 +15,14 @@ export const createAuth = (env: {
     UPSTASH_REDIS_REST_TOKEN: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
+    BETTER_AUTH_URL?: string;
 }) => {
     const db = drizzle(env.DB);
     const kv = createRedisClient(env.UPSTASH_REDIS_REST_URL, env.UPSTASH_REDIS_REST_TOKEN);
 
     return betterAuth({
         appName: 'Skillz',
-        baseURL: 'http://localhost:8787',
+        baseURL: env.BETTER_AUTH_URL || 'http://localhost:8787',
         trustedOrigins: ['http://localhost:5173', 'http://localhost:8787', 'https://skillz.lat'],
         database: drizzleAdapter(db, {
             provider: 'sqlite',
