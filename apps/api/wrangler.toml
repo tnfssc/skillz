@@ -21,12 +21,12 @@ migrations_dir = "../../packages/db/migrations"
 binding = "BUCKET"
 bucket_name = "skillz-packages"
 
-[[vectorize]]
-binding = "VECTORIZE"
-index_name = "skillz-embeddings"
+# [[vectorize]]
+# binding = "VECTORIZE"
+# index_name = "skillz-embeddings"
 
-[ai]
-binding = "AI"
+# [ai]
+# binding = "AI"
 
 [vars]
 ENVIRONMENT = "production"
