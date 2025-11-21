@@ -288,73 +288,103 @@ api.get('/skills/:name/:version', async (c) => {
     }
 });
 
-api.post('/skills', authMiddleware, async (c) => {
-    // TODO: Use c.get('user') to get authenticated user
-    // const user = c.get('user');
+    api.post('/skills', authMiddleware, async (c) => {
+        let userId = c.get('userId');
+        let userName = 'Unknown';
 
-    try {
-        const body = await c.req.parseBody();
-        const name = body['name'] as string;
-        const version = body['version'] as string;
-        const tarball = body['tarball'] as File;
-
-        if (!name || !version || !tarball) {
-            return c.json({ error: 'Missing required fields' }, 400);
+        // Try to get user from session if not set by API key
+        if (!userId) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const user = c.get('user') as any;
+            if (user) {
+                userId = user.id;
+                userName = user.name;
+            }
         }
 
-        // Calculate SHA256 integrity
-        const tarballBuffer = await tarball.arrayBuffer();
-        const hashBuffer = await crypto.subtle.digest('SHA-256', tarballBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        const integrity = `sha256-${hashHex}`;
-
-        // Store in global map for /tarballs endpoint to pick up
-        // This is a HACK for local dev only
-        const key = `${name}/${name}-${version}.tgz`;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (globalThis as any).MOCK_TARBALLS = (globalThis as any).MOCK_TARBALLS || new Map();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (globalThis as any).MOCK_TARBALLS.set(key, tarballBuffer);
+        if (!userId) {
+            return c.json({ error: 'Unauthorized' }, 401);
+        }
 
         const db = drizzle(c.env.DB);
 
-        // Check if skill exists
-        const skill = await db.select().from(skills).where(eq(skills.name, name)).limit(1);
-        let skillId;
-
-        if (skill.length === 0) {
-            // Create skill
-            const result = await db.insert(skills).values({
-                name,
-                description: 'Published via CLI',
-                author: 'alice', // TODO: Use authenticated user name
-                authorId: 'user_1', // TODO: Use authenticated user ID
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }).returning({ id: skills.id });
-            skillId = result[0].id;
-        } else {
-            skillId = skill[0].id;
+        // If we have userId but no name (API key case), fetch user
+        if (userId && userName === 'Unknown') {
+             const u = await db.select().from(user).where(eq(user.id, userId)).limit(1);
+             if (u.length > 0) {
+                 userName = u[0].name;
+             }
         }
 
-        // Create version
-        await db.insert(versions).values({
-            skillId,
-            version,
-            description: 'Published via CLI',
-            tarballUrl: `http://localhost:8787/api/v1/tarballs/${name}/${name}-${version}.tgz`,
-            integrity, // Real SHA256
-            manifest: JSON.stringify({ name, version }),
-            createdAt: new Date()
-        });
+        try {
+            const body = await c.req.parseBody();
+            const name = body['name'] as string;
+            const version = body['version'] as string;
+            const tarball = body['tarball'] as File;
 
-        return c.json({ success: true, name, version });
-    } catch (error) {
-        console.error('Publish failed:', error);
-        return c.json({ error: 'Publish failed' }, 500);
-    }
-});
+            if (!name || !version || !tarball) {
+                return c.json({ error: 'Missing required fields' }, 400);
+            }
+
+            // Calculate SHA256 integrity
+            const tarballBuffer = await tarball.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', tarballBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const integrity = `sha256-${hashHex}`;
+
+            // Store in global map for /tarballs endpoint to pick up
+            // This is a HACK for local dev only
+            const key = `${name}/${name}-${version}.tgz`;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalThis as any).MOCK_TARBALLS = (globalThis as any).MOCK_TARBALLS || new Map();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalThis as any).MOCK_TARBALLS.set(key, tarballBuffer);
+
+            // Check if skill exists
+            const skill = await db.select().from(skills).where(eq(skills.name, name)).limit(1);
+            let skillId;
+
+            if (skill.length === 0) {
+                // Create skill
+                const result = await db.insert(skills).values({
+                    name,
+                    description: 'Published via CLI',
+                    author: userName,
+                    authorId: userId,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }).returning({ id: skills.id });
+                skillId = result[0].id;
+            } else {
+                skillId = skill[0].id;
+                // Optional: Check if current user is the author
+                if (skill[0].authorId !== userId) {
+                    return c.json({ error: 'You are not the author of this skill' }, 403);
+                }
+            }
+
+            // Create version
+            // @ts-expect-error env.BETTER_AUTH_URL is not defined
+            const baseUrl = c.env.BETTER_AUTH_URL || 'http://localhost:8787';
+            const tarballUrl = `${baseUrl}/api/v1/tarballs/${name}/${name}-${version}.tgz`;
+
+            await db.insert(versions).values({
+                skillId,
+                version,
+                description: 'Published via CLI',
+                tarballUrl,
+                integrity, // Real SHA256
+                manifest: JSON.stringify({ name, version }),
+                createdAt: new Date()
+            });
+
+            return c.json({ success: true, name, version });
+        } catch (error) {
+            console.error('Publish failed:', error);
+            return c.json({ error: 'Publish failed', details: String(error) }, 500);
+        }
+    });
 
 api.delete('/skills/:name/:version', authMiddleware, async (c) => {
     // TODO: Implement unpublish logic

@@ -20,7 +20,7 @@ import (
 
 var (
 	version     = "0.1.0"
-	registryURL = "http://localhost:8787/api/v1"
+	registryURL = "https://api.skillz.lat/api/v1"
 
 	rootCmd = &cobra.Command{
 		Use:   "skillz",

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const DefaultRegistryURL = "http://localhost:8787/api/v1"
+const DefaultRegistryURL = "https://api.skillz.lat/api/v1"
 
 // GetRegistryURL returns the registry URL, checking environment variable first
 func GetRegistryURL() string {

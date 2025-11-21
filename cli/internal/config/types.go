@@ -15,7 +15,7 @@ type SkillzManifest struct {
 	Name            string          `toon:"name"`
 	Version         string          `toon:"version"`
 	Description     *string         `toon:"description,omitempty"`
-	Author          *string         `toon:"author,omitempty"`
+	Author          interface{}     `toon:"author,omitempty"`
 	License         *string         `toon:"license,omitempty"`
 	Homepage        *string         `toon:"homepage,omitempty"`
 	Repository      *string         `toon:"repository,omitempty"`
