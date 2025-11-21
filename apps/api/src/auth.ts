@@ -4,7 +4,7 @@ import { apiKey } from 'better-auth/plugins';
 import type { D1Database } from '@cloudflare/workers-types';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@skillz/db';
-import { createRedisClient, Ratelimit } from '@skillz/shared';
+import { createRedisClient } from '@skillz/shared';
 
 const BETTER_AUTH_KV_PREFIX = 'ba:';
 const MAX_PX = 2147483647; // Max 32-bit signed integer

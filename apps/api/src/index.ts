@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, Context } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { drizzle } from 'drizzle-orm/d1';
@@ -16,6 +16,13 @@ type Bindings = {
     UPSTASH_REDIS_REST_TOKEN: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
+};
+
+type Variables = {
+    user?: unknown;
+    session?: unknown;
+    apiKey?: unknown;
+    userId?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -98,7 +105,7 @@ app.post('/api/dev/delete-test-user', async (c) => {
 const api = new Hono<{ Bindings: Bindings }>();
 
 // Middleware to check auth - supports both session (web) and API keys (CLI)
-const authMiddleware = async (c: any, next: any) => {
+const authMiddleware = async (c: Context<{ Bindings: Bindings; Variables: Variables }>, next: () => Promise<void>) => {
     const auth = createAuth(c.env);
     
     // Try to get Authorization header for API key
@@ -142,7 +149,7 @@ const authMiddleware = async (c: any, next: any) => {
 };
 
 // Rate limiting middleware
-const rateLimitMiddleware = async (c: any, next: any) => {
+const rateLimitMiddleware = async (c: Context<{ Bindings: Bindings; Variables: Variables }>, next: () => Promise<void>) => {
     if (!c.env.UPSTASH_REDIS_REST_URL || !c.env.UPSTASH_REDIS_REST_TOKEN) {
         // Skip if not configured (e.g. local dev without redis)
         await next();
@@ -166,7 +173,6 @@ api.use('*', rateLimitMiddleware);
 
 // Me endpoint
 api.get('/me', authMiddleware, async (c) => {
-    // @ts-expect-error
     const user = c.get('user');
     return c.json(user);
 });
@@ -306,7 +312,9 @@ api.post('/skills', authMiddleware, async (c) => {
         // Store in global map for /tarballs endpoint to pick up
         // This is a HACK for local dev only
         const key = `${name}/${name}-${version}.tgz`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (globalThis as any).MOCK_TARBALLS = (globalThis as any).MOCK_TARBALLS || new Map();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (globalThis as any).MOCK_TARBALLS.set(key, tarballBuffer);
 
         const db = drizzle(c.env.DB);
@@ -441,6 +449,7 @@ api.get('/tarballs/:name/:filename', async (c) => {
 
     // Check if we have the tarball in memory (from publish)
     const key = `${name}/${filename}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockTarballs = (globalThis as any).MOCK_TARBALLS;
 
     if (mockTarballs && mockTarballs.has(key)) {
