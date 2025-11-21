@@ -25,7 +25,7 @@ binding = "AI"
 # Production Environment
 [env.production]
 name = "skillz-api-prod"
-# routes = ["api.skillz.dev/*"]
+routes = ["api.skillz.lat/*"]
 
 [[env.production.d1_databases]]
 binding = "DB"

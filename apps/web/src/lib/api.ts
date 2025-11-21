@@ -42,7 +42,7 @@ export interface SkillsResponse {
   offset: number;
 }
 
-const API_BASE = 'http://localhost:8787/api/v1';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8787') + '/api/v1';
 
 export const api = {
   async fetchSkills(params?: { limit?: number; offset?: number; q?: string }): Promise<SkillsResponse> {
