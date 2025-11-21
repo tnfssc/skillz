@@ -75,6 +75,25 @@ The Skillz ecosystem consists of three main components:
 - [API Documentation](apps/api/README.md) - API reference for the registry.
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute to Skillz.
 
+## 🔐 Security
+
+### Reporting Vulnerabilities
+
+If you discover a security vulnerability within Skillz, please send an email to **security@skillz.lat**. All security vulnerabilities will be promptly addressed.
+
+### Verifying Binaries
+
+All official CLI releases are signed. You can verify the integrity of the downloaded binary using the `SHA256SUMS` file attached to each release:
+
+```bash
+# Download binary and checksums
+curl -LO https://github.com/tnfssc/skillz/releases/download/v1.0.0/skillz-linux-amd64
+curl -LO https://github.com/tnfssc/skillz/releases/download/v1.0.0/SHA256SUMS
+
+# Verify
+sha256sum -c SHA256SUMS --ignore-missing
+```
+
 ## 📄 License
 
 MIT

@@ -3,6 +3,7 @@
 ## 🎉 What's Running
 
 ### API Server (Port 8787)
+
 ✅ **Status**: Running and working perfectly
 ✅ **Database**: Seeded with 5 demo skills
 ✅ **Endpoints**: All functional
@@ -10,18 +11,20 @@
 ```bash
 # Test it yourself:
 curl http://localhost:8787/api/v1/skills
-curl http://localhost:8787/api/v1/search?q=data  
+curl http://localhost:8787/api/v1/search?q=data
 curl http://localhost:8787/api/v1/skills/data-analyzer
 curl http://localhost:8787/api/v1/stats
 ```
 
 **Results**:
+
 - ✅ Returns all 5 skills
 - ✅ Search works
 - ✅ Skill details with versions
 - ✅ Stats: 5 skills, 3 users
 
 ### Web App (Port 8788)
+
 ✅ **Status**: Running and rendering beautifully  
 ✅ **Database**: Seeded with same 5 demo skills
 ✅ **Pages**: All working
@@ -29,6 +32,7 @@ curl http://localhost:8787/api/v1/stats
 **Visit**: http://localhost:8788
 
 **What You'll See**:
+
 1. **Homepage** - Hero with gradient title "+ search
    - 🔥 Trending Skills section (5 skills displayed)
    - ✨ Latest Skills section (5 skills displayed)
@@ -50,6 +54,7 @@ curl http://localhost:8787/api/v1/stats
    - Configuration guide
 
 ### CLI Tool
+
 ✅ **Status**: Built and working
 ✅ **Location**: `./dist/skillz`
 
@@ -63,6 +68,7 @@ curl http://localhost:8787/api/v1/stats
 ## 📊 Demo Data Loaded
 
 **5 Skills**:
+
 1. **data-analyzer** (alice) - 3 versions, 2 reviews, 4.5★
 2. **code-reviewer** (bob) - 3 versions, 2 reviews, 5.0★
 3. **document-generator** (alice) - 2 versions, 1 review, 4.0★
@@ -70,6 +76,7 @@ curl http://localhost:8787/api/v1/stats
 5. **excel-wizard** (bob) - 2 versions, 1 review, 5.0★
 
 **All with**:
+
 - Multiple versions
 - Tags
 - Ratings & reviews
@@ -79,6 +86,7 @@ curl http://localhost:8787/api/v1/stats
 ## 🎨 Design Highlights
 
 The web app features:
+
 - **Dark theme** with deep navy (#0f172a) background
 - **Gradient accents** (indigo → purple)
 - **Glassmorphic cards** with hover effects
@@ -92,7 +100,7 @@ The web app features:
 # API Tests
 ./test-api.sh
 
-# CLI Demo  
+# CLI Demo
 ./demo.sh
 
 # Web - Open browser to:
@@ -105,15 +113,12 @@ http://localhost:8788/docs
 ## 📸 What's Visible in the Web App
 
 **HTML Output Confirmed**:
+
 ```html
 <h1>Package Manager for Claude Skills</h1>
 <h2>🔥 Trending Skills</h2>
 
-Cards visible:
-- excel-wizard (by bob)
-- api-tester (by carol)
-- document-generator (by alice)
-- code-reviewer (by bob)
+Cards visible: - excel-wizard (by bob) - api-tester (by carol) - document-generator (by alice) - code-reviewer (by bob)
 - data-analyzer (by alice)
 
 <h2>✨ Latest Skills</h2>
@@ -139,7 +144,7 @@ Port: 8787
 Database: .wrangler/state/v3/d1/skillz-registry
 Status: ✅ RUNNING
 
-Process 2: Web (apps/web) 
+Process 2: Web (apps/web)
 Port: 8788
 Database: .wrangler/state/v3/d1/skillz-registry
 Status: ✅ RUNNING
@@ -174,9 +179,10 @@ curl http://localhost:8787/api/v1/skills
 
 ---
 
-**🎉 COMPLETE SUCCESS! Everything is working perfectly!** 
+**🎉 COMPLETE SUCCESS! Everything is working perfectly!**
 
 The entire Skillz package manager is now:
+
 - ✅ Fully implemented
 - ✅ Running locally
 - ✅ Seeded with demo data

@@ -5,12 +5,14 @@
 A complete monorepo structure for the Skillz package manager with:
 
 ### ✅ Go CLI Tool
+
 - Full command structure (init, add, install, update, remove, list, search, info)
 - Skillz.yaml parser with validation
 - Type definitions for manifest and lock files
 - Built and working at `./dist/skillz`
 
 ### ✅ Cloudflare Workers API (Hono)
+
 - Edge-native API structure
 - D1 database integration (Drizzle ORM)
 - R2 storage bindings
@@ -18,10 +20,12 @@ A complete monorepo structure for the Skillz package manager with:
 - Core API endpoints defined
 
 ### ✅ Packages
+
 - `@skillz/shared` - Shared TypeScript types
 - `@skillz/db` - Drizzle ORM schema for D1 database
 
 ### ✅ Infrastructure
+
 - pnpm workspaces for monorepo
 - TypeScript configurations
 - Wrangler setup for Workers deployment
@@ -30,11 +34,13 @@ A complete monorepo structure for the Skillz package manager with:
 ## Quick Start Commands
 
 ### Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### Build CLI
+
 ```bash
 pnpm build:cli
 # or
@@ -42,12 +48,14 @@ cd cli && go build -o ../dist/skillz ./cmd/skillz
 ```
 
 ### Test CLI
+
 ```bash
 ./dist/skillz --help
 ./dist/skillz init
 ```
 
 ### Run API Locally
+
 ```bash
 pnpm dev
 ```
@@ -55,6 +63,7 @@ pnpm dev
 ### Setup Cloudflare Resources
 
 1. **Create D1 Database:**
+
 ```bash
 cd apps/api
 wrangler d1 create skillz-registry
@@ -62,16 +71,19 @@ wrangler d1 create skillz-registry
 ```
 
 2. **Create R2 Bucket:**
+
 ```bash
 wrangler r2 bucket create skillz-packages
 ```
 
 3. **Create Vectorize Index:**
+
 ```bash
 wrangler vectorize create skillz-embeddings --dimensions=768 --metric=cosine
 ```
 
 4. **Run Database Migrations:**
+
 ```bash
 cd ../../packages/db
 pnpm drizzle-kit generate
@@ -86,7 +98,7 @@ skillz.lat/
 ├── cli/                    # Go CLI tool
 │   ├── cmd/skillz/        # Main entry point
 │   │   └── main.go        # ✅ CLI commands
-│   ├── internal/          
+│   ├── internal/
 │   │   ├── config/        # ✅ Types
 │   │   ├── parser/        # ✅ YAML parser
 │   │   ├── installer/     # TODO: Installation logic
@@ -124,6 +136,7 @@ skillz.lat/
 ## Next Steps
 
 ### Phase 1: CLI Foundation (Current)
+
 - [ ] Implement `skillz init` command
 - [ ] Implement `skillz add` command with registry lookup
 - [ ] Implement basic dependency resolution
@@ -132,6 +145,7 @@ skillz.lat/
 - [ ] Integrate with mise for CLI tools
 
 ### Phase 2: Registry Backend
+
 - [ ] Implement user authentication (JWT)
 - [ ] Implement skill publishing endpoint
 - [ ] Implement search with Vectorize/D1 FTS
@@ -139,6 +153,7 @@ skillz.lat/
 - [ ] Implement package storage on R2
 
 ### Phase 3: Web Platform
+
 - [ ] Create Hono SSR web frontend
 - [ ] Build homepage with search
 - [ ] Create skill detail pages
@@ -148,6 +163,7 @@ skillz.lat/
 ## Development Workflow
 
 ### CLI Development
+
 ```bash
 cd cli
 go run cmd/skillz/main.go <command>
@@ -155,6 +171,7 @@ go test ./...
 ```
 
 ### API Development
+
 ```bash
 cd apps/api
 pnpm dev           # Start local dev server
@@ -162,6 +179,7 @@ pnpm deploy        # Deploy to Cloudflare
 ```
 
 ### Database Changes
+
 ```bash
 cd packages/db
 # Edit src/schema.ts
@@ -181,15 +199,15 @@ pnpm drizzle-kit migrate
 
 ## Tech Stack Summary
 
-| Component | Technology | Status |
-|-----------|-----------|--------|
-| CLI | Go + Cobra | ✅ Built |
-| API | Cloudflare Workers + Hono | ✅ Structure |
-| Web | Cloudflare Workers + Hono SSR | 🚧 TODO |
-| Database | D1 + Drizzle ORM | ✅ Schema |
-| Storage | Cloudflare R2 | 🚧 Config |
-| Search | Vectorize + Workers AI | 🚧 Config |
-| Monorepo | pnpm workspaces | ✅ Setup |
+| Component | Technology                    | Status       |
+| --------- | ----------------------------- | ------------ |
+| CLI       | Go + Cobra                    | ✅ Built     |
+| API       | Cloudflare Workers + Hono     | ✅ Structure |
+| Web       | Cloudflare Workers + Hono SSR | 🚧 TODO      |
+| Database  | D1 + Drizzle ORM              | ✅ Schema    |
+| Storage   | Cloudflare R2                 | 🚧 Config    |
+| Search    | Vectorize + Workers AI        | 🚧 Config    |
+| Monorepo  | pnpm workspaces               | ✅ Setup     |
 
 ---
 

@@ -64,6 +64,7 @@ Expected output
 ## MCP Tools Used
 
 List of MCP server tools this skill invokes:
+
 - `tool_name` from `server_name` - Description
 - `another_tool` from `another_server` - Description
 
@@ -92,6 +93,7 @@ Skills can reference other skills:
 ## Dependencies
 
 This skill uses the following skills:
+
 - `text-analyzer`: For preprocessing input
 - `formatter`: For output formatting
 
@@ -118,6 +120,7 @@ These variables are defined in skillz.yaml config section.
 ## Future Enhancements
 
 Potential additions to consider:
+
 - Skill versioning within the markdown
 - Conditional logic blocks
 - Parameterized sections

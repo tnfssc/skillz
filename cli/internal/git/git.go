@@ -15,6 +15,10 @@ func Clone(url, dest, ref string) error {
 		return fmt.Errorf("git is not installed or not in PATH")
 	}
 
+	if strings.HasPrefix(ref, "-") {
+		return fmt.Errorf("invalid ref: %s (cannot start with -)", ref)
+	}
+
 	// Clone with depth 1 for efficiency (shallow clone)
 	args := []string{"clone"}
 	if ref != "" {

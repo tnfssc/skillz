@@ -1,33 +1,33 @@
 {
-    "name": "@skillz/api",
-    "version": "0.1.0",
-    "type": "module",
-    "private": true,
-    "main": "./src/index.ts",
-    "scripts": {
-        "dev": "wrangler dev",
-        "deploy": "wrangler deploy",
-        "db:migrate:local": "wrangler d1 migrations apply DB --local",
-        "db:migrate": "wrangler d1 migrations apply DB --remote",
-        "db:seed": "wrangler d1 execute DB --local --file=../../packages/db/seed.sql",
-        "test": "vitest",
-        "lint": "eslint .",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@skillz/db": "workspace:*",
-        "@skillz/shared": "workspace:*",
-        "better-auth": "^1.3.34",
-        "drizzle-orm": "^0.44.7",
-        "hono": "^4.10.6"
-    },
-    "devDependencies": {
-        "@cloudflare/workers-types": "^4.20251121.0",
-        "@eslint/js": "^9.39.1",
-        "eslint": "^9.39.1",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.47.0",
-        "vitest": "^4.0.13",
-        "wrangler": "^4.50.0"
-    }
+  "name": "@skillz/api",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate": "wrangler d1 migrations apply DB --remote",
+    "db:seed": "wrangler d1 execute DB --local --file=../../packages/db/seed.sql",
+    "test": "vitest",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@skillz/db": "workspace:*",
+    "@skillz/shared": "workspace:*",
+    "better-auth": "^1.3.34",
+    "drizzle-orm": "^0.44.7",
+    "hono": "^4.10.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251121.0",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.47.0",
+    "vitest": "^4.0.13",
+    "wrangler": "^4.50.0"
+  }
 }

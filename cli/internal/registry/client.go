@@ -17,6 +17,9 @@ const DefaultRegistryURL = "https://api.skillz.lat/api/v1"
 // GetRegistryURL returns the registry URL, checking environment variable first
 func GetRegistryURL() string {
 	if url := os.Getenv("SKILLZ_REGISTRY_URL"); url != "" {
+		if url != DefaultRegistryURL {
+			fmt.Fprintf(os.Stderr, "WARNING: Using custom registry URL: %s\n", url)
+		}
 		return url
 	}
 	return DefaultRegistryURL

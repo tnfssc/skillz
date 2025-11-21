@@ -95,6 +95,7 @@ cli/
 ```
 
 **Key Patterns:**
+
 - Each `internal/` subdirectory is a package (e.g., `package installer`)
 - Tests are co-located with implementation (`*_test.go`)
 - Types are centralized in `config/types.go`
@@ -113,6 +114,7 @@ apps/api/
 ```
 
 **Key Patterns:**
+
 - Single-file API (can be split into modules as it grows)
 - Uses Hono for routing: `app.get('/api/v1/skills', handler)`
 - Drizzle ORM for database queries
@@ -132,6 +134,7 @@ apps/web/
 ```
 
 **Key Patterns:**
+
 - Hono SSR with JSX
 - Inline CSS for styling (no build step)
 - Server-side data fetching
@@ -150,6 +153,7 @@ packages/db/
 ```
 
 **Key Tables:**
+
 - `skills` - Skill metadata
 - `skillVersions` - Version history
 - `tags` - Categorization
@@ -208,11 +212,13 @@ dependencies:
 **Entry point:** `cli/internal/resolver/resolver.go`
 
 **Sources supported:**
+
 - **Registry** - `data-analyzer` or `data-analyzer@1.0.0`
 - **Git** - `github.com/user/repo` or `github.com/user/repo#branch`
 - **Local** - `./local-skill` or `file:../local-skill`
 
 **Resolution strategy:**
+
 1. Parse dependency specifier
 2. Determine source (registry, git, or local)
 3. Fetch metadata/tags
@@ -240,6 +246,7 @@ go test ./internal/installer -v  # Run specific package with verbose output
 ```
 
 **Patterns:**
+
 - Use `t.TempDir()` for temporary directories
 - Co-locate tests with implementation
 - Test file naming: `*_test.go`
@@ -253,6 +260,7 @@ pnpm test                        # Run Vitest tests
 ```
 
 **Patterns:**
+
 - Use Vitest for testing
 - Mock Cloudflare bindings in tests
 - Test file naming: `*.test.ts`
@@ -282,10 +290,10 @@ pnpm test                        # Run Vitest tests
 
 1. **Define route** in `apps/api/src/index.ts`:
    ```typescript
-   app.get('/api/v1/new-endpoint', async (c) => {
-       const db = drizzle(c.env.DB);
-       // Query database
-       return c.json(results);
+   app.get("/api/v1/new-endpoint", async (c) => {
+     const db = drizzle(c.env.DB);
+     // Query database
+     return c.json(results);
    });
    ```
 2. **Add types** to `packages/shared/src/index.ts` if needed
@@ -295,9 +303,9 @@ pnpm test                        # Run Vitest tests
 
 1. **Edit** `packages/db/src/schema.ts`:
    ```typescript
-   export const newTable = sqliteTable('new_table', {
-       id: integer('id').primaryKey(),
-       name: text('name').notNull(),
+   export const newTable = sqliteTable("new_table", {
+     id: integer("id").primaryKey(),
+     name: text("name").notNull(),
    });
    ```
 2. **Generate migration:**
@@ -330,7 +338,7 @@ pnpm test                        # Run Vitest tests
 ### Go
 
 - **Formatting:** Use `gofmt` (automatically applied)
-- **Naming:** 
+- **Naming:**
   - Exported: `PascalCase` (e.g., `NewInstaller`)
   - Unexported: `camelCase` (e.g., `downloadFile`)
 - **Error handling:** Always check and return errors

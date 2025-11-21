@@ -41,6 +41,11 @@ jobs:
         if: ${{ matrix.goos == 'windows' }}
         run: mv skillz-${{ matrix.goos }}-${{ matrix.goarch }} skillz-${{ matrix.goos }}-${{ matrix.goarch }}.exe
 
+      - name: Generate Checksums
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          sha256sum skillz-* > SHA256SUMS
+
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -48,3 +53,4 @@ jobs:
           files: |
             skillz-${{ matrix.goos }}-${{ matrix.goarch }}
             skillz-${{ matrix.goos }}-${{ matrix.goarch }}.exe
+            SHA256SUMS

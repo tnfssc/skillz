@@ -5,6 +5,7 @@
 ### 🗄️ Database & Seed Data
 
 **Demo Skills Added:**
+
 1. **data-analyzer** (by alice)
    - 3 versions (1.0.0, 1.1.0, 1.2.0)
    - Tags: data, analytics, visualization
@@ -36,6 +37,7 @@
    - 1 review (5.0★)
 
 **Seed File**: `packages/db/seed.sql`
+
 - 3 users
 - 5 skills
 - 13 versions
@@ -48,6 +50,7 @@
 **Pages Implemented:**
 
 **Homepage** (`/`)
+
 - Beautiful hero section with gradient text
 - Live search bar
 - "Trending Skills" section (by downloads)
@@ -56,12 +59,14 @@
 - Fully responsive dark theme
 
 **Browse Skills** (`/skills`)
+
 - Grid layout of all skills
 - Search functionality
 - Skill cards with metadata
 - Filter by query parameter
 
 **Skill Detail** (`/skills/:name`)
+
 - Complete skill information display
 - Version history with descriptions
 - Installation instructions
@@ -72,12 +77,14 @@
 - Sidebar with quick links
 
 **Documentation** (`/docs`)
+
 - Getting started guide
 - Command reference
 - Configuration examples
 - skillz.yaml specification
 
 **Design Features:**
+
 - ✨ Modern dark theme with glassmorphism
 - 🎨 Gradient accents (primary to secondary)
 - 📱 Fully responsive (mobile-first)
@@ -126,11 +133,13 @@ cli/                   # ✅ Go CLI
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Set Up Database
+
 ```bash
 # Run the setup script
 ./setup-db.sh
@@ -157,6 +166,7 @@ wrangler d1 execute skillz-registry --local --file=../../packages/db/seed.sql
 ### 3. Start Development Servers
 
 **API:**
+
 ```bash
 cd apps/api
 pnpm dev
@@ -164,6 +174,7 @@ pnpm dev
 ```
 
 **Web:**
+
 ```bash
 cd apps/web
 pnpm dev
@@ -171,6 +182,7 @@ pnpm dev
 ```
 
 **CLI:**
+
 ```bash
 # Already built!
 ./dist/skillz --help
@@ -179,11 +191,13 @@ pnpm dev
 ## 🎯 Testing Everything
 
 ### Test the CLI
+
 ```bash
 ./demo.sh
 ```
 
 ### Test the API
+
 ```bash
 # Get all skills
 curl http://localhost:8787/api/v1/skills
@@ -199,6 +213,7 @@ curl http://localhost:8787/api/v1/stats
 ```
 
 ### Test the Web App
+
 1. Open `http://localhost:8788` in your browser
 2. Browse the homepage with trending/latest skills
 3. Click on a skill to see details
@@ -208,6 +223,7 @@ curl http://localhost:8787/api/v1/stats
 ## 📸 What You'll See
 
 ### Homepage
+
 - **Hero**: Large gradient title "Package Manager for Claude Skills"
 - **Search Bar**: Prominent search input
 - **Trending Section**: 6 most downloaded skills in card grid
@@ -215,6 +231,7 @@ curl http://localhost:8787/api/v1/stats
 - **Getting Started**: Code snippet with installation
 
 ### Skill Detail Page
+
 - **Header**: Skill name, description
 - **Stats Bar**: Author, license, downloads, rating
 - **Tags**: Color-coded tag pills
@@ -224,6 +241,7 @@ curl http://localhost:8787/api/v1/stats
 - **Sidebar**: Links to repo, homepage, author
 
 ### Design
+
 - **Dark Theme**: Deep blue background (#0f172a)
 - **Cards**: Elevated with hover effects
 - **Gradients**: Purple → Indigo accents
@@ -234,12 +252,14 @@ curl http://localhost:8787/api/v1/stats
 ## 📊 Statistics
 
 ### Code
+
 - **TypeScript Files**: 11 (API + Web + Shared)
 - **Go Files**: 8 (CLI + Tests)
 - **SQL Files**: 2 (Schema + Seed)
 - **Total Tests**: 14 (all passing ✅)
 
 ### Features
+
 - **CLI Commands**: 5 working, 3 stubs
 - **API Endpoints**: 6 working
 - **Web Pages**: 4 complete
@@ -249,15 +269,14 @@ curl http://localhost:8787/api/v1/stats
 ## 🎨 Design Highlights
 
 ### Color Palette
+
 ```css
---primary: #6366f1      /* Indigo */
---secondary: #8b5cf6    /* Purple */
---background: #0f172a   /* Dark blue */
---surface: #1e293b      /* Lighter blue */
---text: #f1f5f9         /* Almost white */
+--primary: #6366f1 /* Indigo */ --secondary: #8b5cf6 /* Purple */ --background: #0f172a /* Dark blue */
+  --surface: #1e293b /* Lighter blue */ --text: #f1f5f9 /* Almost white */;
 ```
 
 ### Components
+
 - Gradient text headers
 - Glassmorphic cards with blur
 - Smooth hover animations

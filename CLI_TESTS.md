@@ -11,13 +11,16 @@
 ## Command Tests
 
 ### 1. ✅ `skillz --version`
+
 ```bash
 $ ./dist/skillz --version
 skillz version 0.1.0
 ```
+
 **Status**: ✅ PASS
 
 ### 2. ✅ `skillz init`
+
 ```bash
 $ skillz init
 ✨ Initializing new skillz project...
@@ -34,12 +37,15 @@ Next steps:
   2. Add dependencies: skillz add <skill-name>
   3. Install dependencies: skillz install
 ```
+
 **Status**: ✅ PASS
 **Files Created**:
+
 - ✅ skillz.yaml (valid YAML with all required fields)
 - ✅ SKILL.md (template with sections)
 
 **Generated skillz.yaml**:
+
 ```yaml
 manifest-version: "1"
 name: my-test-skill
@@ -48,15 +54,16 @@ description: A test skill for demo
 author: Test User
 license: MIT
 skill:
-    main: SKILL.md
+  main: SKILL.md
 constraints:
-    os:
-        - linux
-        - macos
-        - windows
+  os:
+    - linux
+    - macos
+    - windows
 ```
 
 ### 3. ✅ `skillz add <skill-name>`
+
 ```bash
 $ skillz add data-analyzer
 📦 Adding data-analyzer...
@@ -65,10 +72,12 @@ Adding registry dependency: data-analyzer@latest
 
 Run 'skillz install' to install the dependency
 ```
+
 **Status**: ✅ PASS
 **Verification**: Dependency added to skillz.yaml under `dependencies.skills`
 
 ### 4. ✅ `skillz add <git-url> --dev`
+
 ```bash
 $ skillz add https://github.com/example/helper-skill --dev
 📦 Adding https://github.com/example/helper-skill...
@@ -77,18 +86,21 @@ Adding git dependency: helper-skill
 
 Run 'skillz install' to install the dependency
 ```
+
 **Status**: ✅ PASS
 **Verification**: Git dependency added to `dev-dependencies.skills` with git URL
 
 **Updated skillz.yaml excerpt**:
+
 ```yaml
 dev-dependencies:
-    skills:
-        helper-skill:
-            git: https://github.com/example/helper-skill
+  skills:
+    helper-skill:
+      git: https://github.com/example/helper-skill
 ```
 
 ### 5. ✅ `skillz list`
+
 ```bash
 $ skillz list
 📋 my-test-skill@1.0.0
@@ -99,13 +111,16 @@ Dependencies:
 Dev Dependencies:
   • helper-skill (git)
 ```
+
 **Status**: ✅ PASS
 **Shows**:
+
 - Project name and version
 - Regular dependencies
 - Dev dependencies with type indicators
 
 ### 6. ✅ `skillz install`
+
 ```bash
 $ skillz install
 📥 Installing dependencies...
@@ -117,19 +132,23 @@ Dependencies:
 ⚠️  Installation logic not yet implemented
 Coming soon: dependency resolution, downloading, and extraction
 ```
+
 **Status**: ✅ PASS (shows correct counts)
 **Note**: Actual installation logic planned for future implementation
 
 ### 7. ✅ `skillz remove <skill-name>`
+
 ```bash
 $ skillz remove data-analyzer
 🗑️  Removing data-analyzer...
 ✅ Removed data-analyzer from dependencies
 ```
+
 **Status**: ✅ PASS
 **Verification**: Dependency removed from skillz.yaml
 
 ### 8. ✅ Final State Check
+
 ```bash
 $ skillz list
 📋 my-test-skill@1.0.0
@@ -137,6 +156,7 @@ $ skillz list
 Dev Dependencies:
   • helper-skill (git)
 ```
+
 **Status**: ✅ PASS
 **Shows**: Only dev dependency remains after removal
 
@@ -145,11 +165,13 @@ Dev Dependencies:
 ## Unit Tests
 
 ### Go Test Suite
+
 ```bash
 $ cd cli && go test ./... -v
 ```
 
 **Results**:
+
 ```
 ✅ internal/installer:
    - TestNewInstaller .......................... PASS
@@ -181,6 +203,7 @@ TOTAL: 14/14 tests PASSED ✅
 ## Feature Coverage
 
 ### ✅ Working Features
+
 - [x] **Project initialization** with interactive prompts
 - [x] **Template generation** for SKILL.md
 - [x] **YAML parsing** with validation
@@ -202,6 +225,7 @@ TOTAL: 14/14 tests PASSED ✅
   - [x] Non-existent skill removal
 
 ### 🚧 Planned Features
+
 - [ ] Actual package download from registry
 - [ ] Dependency resolution (SAT solver)
 - [ ] Version constraint handling (^, ~, >=)
@@ -228,6 +252,7 @@ drwxrwxrwt 24 root root 4096 Nov 18 21:58 ..
 ```
 
 **SKILL.md Content** (first 20 lines):
+
 ```markdown
 # my-test-skill
 
@@ -256,14 +281,14 @@ Describe what this skill does and when to use it.
 
 ## Performance
 
-| Command | Time | Status |
-|---------|------|--------|
-| `skillz --version` | <10ms | ✅ |
-| `skillz init` | ~500ms | ✅ |
-| `skillz add` | ~100ms | ✅ |
-| `skillz list` | <50ms | ✅ |
-| `skillz install` | ~100ms | ✅ |
-| `skillz remove` | ~100ms | ✅ |
+| Command            | Time   | Status |
+| ------------------ | ------ | ------ |
+| `skillz --version` | <10ms  | ✅     |
+| `skillz init`      | ~500ms | ✅     |
+| `skillz add`       | ~100ms | ✅     |
+| `skillz list`      | <50ms  | ✅     |
+| `skillz install`   | ~100ms | ✅     |
+| `skillz remove`    | ~100ms | ✅     |
 
 All commands execute quickly and efficiently!
 
@@ -272,6 +297,7 @@ All commands execute quickly and efficiently!
 ## Summary
 
 ### Test Results
+
 - **Commands Tested**: 8/8
 - **Commands Working**: 8/8 (100%)
 - **Unit Tests**: 14/14 passing (100%)
@@ -280,9 +306,11 @@ All commands execute quickly and efficiently!
 - **Error Handling**: ✅ Working
 
 ### Overall Status
-# 🎉 ALL CLI TESTS PASSING! 
+
+# 🎉 ALL CLI TESTS PASSING!
 
 The Skillz CLI is **fully functional** with:
+
 - Interactive project initialization
 - Dependency management (add, remove, list)
 - Git and registry support
