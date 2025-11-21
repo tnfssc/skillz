@@ -67,7 +67,7 @@ app.post('/api/dev/create-test-user', async (c) => {
             }),
         });
 
-        const signupData = await signupResponse.json();
+        const signupData = await signupResponse.json() as { error?: string };
 
         if (!signupResponse.ok) {
             console.error('Signup failed:', signupData);
@@ -166,6 +166,7 @@ api.use('*', rateLimitMiddleware);
 
 // Me endpoint
 api.get('/me', authMiddleware, async (c) => {
+    // @ts-expect-error
     const user = c.get('user');
     return c.json(user);
 });

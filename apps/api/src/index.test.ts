@@ -7,7 +7,7 @@ describe('API Routes', () => {
             const res = await app.request('/');
             expect(res.status).toBe(200);
 
-            const data = await res.json();
+            const data = await res.json() as { name: string; status: string };
             expect(data.name).toBe('skillz-api');
             expect(data.status).toBe('ok');
         });
@@ -18,7 +18,7 @@ describe('API Routes', () => {
             const res = await app.request('/api/v1/skills');
             expect(res.status).toBe(200);
 
-            const data = await res.json();
+            const data = await res.json() as { skills: unknown[] };
             expect(data).toHaveProperty('skills');
             expect(Array.isArray(data.skills)).toBe(true);
         });
@@ -27,7 +27,7 @@ describe('API Routes', () => {
             const res = await app.request('/api/v1/skills?limit=10&offset=0');
             expect(res.status).toBe(200);
 
-            const data = await res.json();
+            const data = await res.json() as { limit: number; offset: number };
             expect(data.limit).toBe(10);
             expect(data.offset).toBe(0);
         });

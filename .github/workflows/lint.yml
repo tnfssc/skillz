@@ -15,6 +15,7 @@ env:
 
 jobs:
   lint-go:
+    name: Lint Go
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,16 +24,38 @@ jobs:
         run: |
           cd cli
           golangci-lint run
-      - name: Install API Dependencies
+
+  lint-node:
+    name: Lint Node Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Type Check
+        run: pnpm run typecheck
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test API
         run: |
           cd apps/api
-          pnpm install
-      - name: Lint API
-        run: |
-          cd apps/api
-          # Assuming there is a lint script, otherwise we might need to add one or run eslint directly
-          if npm run | grep -q "lint"; then
-            pnpm run lint
+          if npm run | grep -q "test"; then
+            pnpm run test
           else
-            echo "No lint script found, skipping"
+            echo "No test script found for API"
+          fi
+
+      - name: Test Web
+        run: |
+          cd apps/web
+          if npm run | grep -q "test"; then
+            pnpm run test
+          else
+            echo "No test script found for Web"
           fi
