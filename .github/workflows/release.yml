@@ -41,6 +41,12 @@ jobs:
           fi
           go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o ../$BINARY_NAME ./cmd/skillz
 
+      - name: Package the executable
+        if: ${{ ! (matrix.goos == 'windows' && matrix.goarch == 'arm64') }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y upx
+          upx --best --lzma --force-macos skillz-*
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
