@@ -16,6 +16,7 @@ import (
 	"github.com/tnfssc/skillz/cli/internal/parser"
 	"github.com/tnfssc/skillz/cli/internal/registry"
 	"github.com/tnfssc/skillz/cli/internal/resolver"
+	"github.com/tnfssc/skillz/cli/internal/ui"
 )
 
 var (
@@ -30,6 +31,49 @@ It provides dependency management, versioning, and a registry for skills.`,
 		Version: version,
 	}
 )
+
+func init() {
+	// Customize help template
+	rootCmd.SetHelpTemplate(`{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}
+
+{{end}}{{if or .Runnable .HasSubCommands}}{{.UsageString}}{{end}}`)
+
+	// Customize usage template with styled output
+	rootCmd.SetUsageTemplate(`
+✨ Usage:{{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
+
+📋 Available Commands:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
+
+{{.Title}}{{range $cmds}}{{if (and (eq .GroupID $group.ID) (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if not .AllChildCommandsHaveGroup}}
+
+Additional Commands:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+⚙️  Flags:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`)
+
+	// Customize version template
+	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf "%s " .}}{{end}}{{printf "version %s\n" .Version}}`)
+}
 
 func main() {
 	// Add subcommands
@@ -149,7 +193,7 @@ func runInit() error {
 		return fmt.Errorf("skillz.toon already exists")
 	}
 
-	fmt.Println("✨ Initializing new skillz project...")
+	fmt.Println(ui.Header("Initialize Skillz Project"))
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -240,11 +284,16 @@ func runInit() error {
 		}
 	}
 
-	fmt.Printf("\n✅ Created skillz.toon and %s\n", main)
-	fmt.Println("\nNext steps:")
-	fmt.Println("  1. Edit SKILL.md with your skill instructions")
-	fmt.Println("  2. Add dependencies: skillz add <skill-name>")
-	fmt.Println("  3. Install dependencies: skillz install")
+	fmt.Println()
+	fmt.Println(ui.Success(fmt.Sprintf("Created skillz.toon and %s", main)))
+	fmt.Println()
+	fmt.Println(ui.SubHeader("Next steps"))
+	steps := []string{
+		"Edit SKILL.md with your skill instructions",
+		"Add dependencies: " + ui.Code("skillz add <skill-name>"),
+		"Install dependencies: " + ui.Code("skillz install"),
+	}
+	fmt.Println(ui.NumberedList(steps))
 
 	return nil
 }
@@ -263,7 +312,8 @@ func runAdd(target string, isDev bool) error {
 		return fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	fmt.Printf("📦 Adding %s...\n", target)
+	fmt.Println(ui.Header("Add Dependency"))
+	fmt.Println(ui.Info("Adding: " + target))
 
 	// Determine if it's a git URL or package name
 	isGit := strings.HasPrefix(target, "https://") || strings.HasPrefix(target, "git@")
@@ -329,8 +379,9 @@ func runAdd(target string, isDev bool) error {
 		return fmt.Errorf("failed to update manifest: %w", err)
 	}
 
-	fmt.Printf("✅ Added %s to %s\n", skillName, manifestPath)
-	fmt.Println("\nRun 'skillz install' to install the dependency")
+	fmt.Println()
+	fmt.Println(ui.Success(fmt.Sprintf("Added %s to %s", skillName, manifestPath)))
+	fmt.Println(ui.Info("Run 'skillz install' to install the dependency"))
 
 	return nil
 }
@@ -347,8 +398,9 @@ func runInstall() error {
 		return fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	fmt.Println("📥 Installing dependencies...")
-	fmt.Printf("Project: %s@%s\n\n", manifest.Name, manifest.Version)
+	fmt.Println(ui.Header(manifest.Name + "@" + manifest.Version))
+	fmt.Println(ui.Info("Installing dependencies..."))
+	fmt.Println()
 
 	// Build dependencies list (registry only for now, git deps handled separately)
 	var rootDeps []resolver.Dependency
@@ -419,12 +471,13 @@ func runInstall() error {
 	var plan []resolver.ResolvedPackage
 
 	if len(rootDeps) == 0 && len(gitDeps) == 0 {
-		fmt.Println("No dependencies to install.")
+		fmt.Println(ui.Info("No dependencies to install."))
 		return nil
 	}
 
 	if len(rootDeps) > 0 {
-		fmt.Printf("Resolving %d registry dependencies...\n", len(rootDeps))
+		fmt.Println(ui.SubHeader("Resolving Dependencies"))
+		fmt.Println(ui.Info(fmt.Sprintf("Resolving %d registry dependencies...", len(rootDeps))))
 
 		// Initialize resolver
 		client := registry.NewClient("http://localhost:8787/api/v1")
@@ -443,16 +496,26 @@ func runInstall() error {
 	plan = append(plan, gitDeps...)
 
 	// Print plan
-	fmt.Println("\nResolution Plan:")
+	fmt.Println()
+	fmt.Println(ui.SubHeader("Installation Plan"))
+	var rows [][]string
 	for _, pkg := range plan {
+		var name, version, source string
+		name = pkg.Name
 		if pkg.Location == "git" {
-			fmt.Printf("  + %s (git: %s@%s)\n", pkg.Name, pkg.GitURL, pkg.GitRef)
+			version = ui.StyleMuted.Render(pkg.GitRef)
+			source = ui.StyleCode.Render("git")
 		} else {
-			fmt.Printf("  + %s@%s\n", pkg.Name, pkg.Version)
+			version = pkg.Version
+			source = ui.StyleInfo.Render("registry")
 		}
+		rows = append(rows, []string{name, version, source})
 	}
+	table := ui.Table([]string{"Package", "Version", "Source"}, rows)
+	fmt.Println(table)
 
-	fmt.Println("\n🚀 Installing packages...")
+	fmt.Println()
+	fmt.Println(ui.SubHeader("Installing Packages"))
 
 	// Initialize installer
 	inst := installer.NewInstaller(mustGetwd())
@@ -491,17 +554,19 @@ func runInstall() error {
 		return fmt.Errorf("failed to write lockfile: %w", err)
 	}
 
-	fmt.Println("\n✅ Installation complete!")
+	fmt.Println()
+	fmt.Println(ui.Success("Installation complete!"))
 
 	return nil
 }
 
 func runUpdate(skillName string) error {
 	if skillName == "" {
-		fmt.Println("🔄 Updating all dependencies...")
+		fmt.Println(ui.Header("Update All Dependencies"))
 	} else {
-		fmt.Printf("🔄 Updating %s...\n", skillName)
+		fmt.Println(ui.Header("Update: " + skillName))
 	}
+	fmt.Println(ui.Warning("Not implemented yet"))
 	return fmt.Errorf("not implemented yet")
 }
 
@@ -517,7 +582,8 @@ func runRemove(skillName string) error {
 		return fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	fmt.Printf("🗑️  Removing %s...\n", skillName)
+	fmt.Println(ui.Header("Remove Dependency"))
+	fmt.Println(ui.Info("Removing: " + skillName))
 
 	// Check if skill exists in dependencies
 	found := false
@@ -543,7 +609,8 @@ func runRemove(skillName string) error {
 		return fmt.Errorf("failed to update manifest: %w", err)
 	}
 
-	fmt.Printf("✅ Removed %s from dependencies\n", skillName)
+	fmt.Println()
+	fmt.Println(ui.Success(fmt.Sprintf("Removed %s from dependencies", skillName)))
 
 	return nil
 }
@@ -560,52 +627,81 @@ func runList() error {
 		return fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	fmt.Printf("📋 %s@%s\n\n", manifest.Name, manifest.Version)
+	fmt.Println(ui.Header(manifest.Name + "@" + manifest.Version))
 
+	// Dependencies
 	if manifest.Dependencies != nil && len(manifest.Dependencies.Skills) > 0 {
-		fmt.Println("Dependencies:")
+		fmt.Println(ui.SubHeader("Dependencies"))
+
+		var rows [][]string
 		for name, dep := range manifest.Dependencies.Skills {
-			if version, ok := dep.(string); ok {
-				fmt.Printf("  • %s@%s\n", name, version)
+			var version string
+			var depType string
+			if v, ok := dep.(string); ok {
+				version = v
+				depType = ui.StyleInfo.Render("registry")
 			} else {
-				fmt.Printf("  • %s (git)\n", name)
+				version = ui.StyleMuted.Render("(git)")
+				depType = ui.StyleCode.Render("git")
 			}
+			rows = append(rows, []string{name, version, depType})
 		}
+
+		table := ui.Table([]string{"Name", "Version", "Type"}, rows)
+		fmt.Println(table)
 		fmt.Println()
 	}
 
+	// Dev Dependencies
 	if manifest.DevDependencies != nil && len(manifest.DevDependencies.Skills) > 0 {
-		fmt.Println("Dev Dependencies:")
+		fmt.Println(ui.SubHeader("Dev Dependencies"))
+
+		var rows [][]string
 		for name, dep := range manifest.DevDependencies.Skills {
-			if version, ok := dep.(string); ok {
-				fmt.Printf("  • %s@%s\n", name, version)
+			var version string
+			var depType string
+			if v, ok := dep.(string); ok {
+				version = v
+				depType = ui.StyleInfo.Render("registry")
 			} else {
-				fmt.Printf("  • %s (git)\n", name)
+				version = ui.StyleMuted.Render("(git)")
+				depType = ui.StyleCode.Render("git")
 			}
+			rows = append(rows, []string{name, version, depType})
 		}
+
+		table := ui.Table([]string{"Name", "Version", "Type"}, rows)
+		fmt.Println(table)
 		fmt.Println()
 	}
 
+	// MCP Servers
 	if manifest.Dependencies != nil && len(manifest.Dependencies.MCPServers) > 0 {
-		fmt.Println("MCP Servers:")
+		fmt.Println(ui.SubHeader("MCP Servers"))
+		var items []string
 		for name := range manifest.Dependencies.MCPServers {
-			fmt.Printf("  • %s\n", name)
+			items = append(items, name)
 		}
+		fmt.Println(ui.List(items))
 		fmt.Println()
 	}
 
+	// CLI Tools
 	if manifest.Dependencies != nil && len(manifest.Dependencies.CLITools) > 0 {
-		fmt.Println("CLI Tools:")
+		fmt.Println(ui.SubHeader("CLI Tools"))
+		var rows [][]string
 		for name, version := range manifest.Dependencies.CLITools {
-			fmt.Printf("  • %s@%s\n", name, version)
+			rows = append(rows, []string{name, version})
 		}
+		table := ui.Table([]string{"Name", "Version"}, rows)
+		fmt.Println(table)
 	}
 
 	return nil
 }
 
 func runSearch(query string) error {
-	fmt.Printf("🔍 Searching for '%s'...\n", query)
+	fmt.Println(ui.Header("Search: " + query))
 
 	client := registry.NewClient(registryURL)
 	result, err := client.SearchSkills(query)
@@ -614,20 +710,22 @@ func runSearch(query string) error {
 	}
 
 	if len(result.Skills) == 0 {
-		fmt.Println("\nNo skills found.")
+		fmt.Println(ui.Warning("No skills found."))
 		return nil
 	}
 
-	fmt.Printf("\nFound %d skill(s):\n\n", result.Total)
+	fmt.Println(ui.Info(fmt.Sprintf("Found %d skill(s)", result.Total)))
+	fmt.Println()
 
 	for _, skill := range result.Skills {
-		fmt.Printf("  📦 %s\n", skill.Name)
+		skillBox := ui.StyleBold.Render(ui.IconPackage + " " + skill.Name)
 		if skill.Description != "" {
-			fmt.Printf("     %s\n", skill.Description)
+			skillBox += "\n" + ui.StyleMuted.Render("  "+skill.Description)
 		}
 		if skill.Author != "" {
-			fmt.Printf("     by %s\n", skill.Author)
+			skillBox += "\n" + ui.StyleMuted.Render("  by "+skill.Author)
 		}
+		fmt.Println(ui.Box(skillBox))
 		fmt.Println()
 	}
 
@@ -635,7 +733,7 @@ func runSearch(query string) error {
 }
 
 func runInfo(skillName string) error {
-	fmt.Printf("ℹ️  Information about %s:\n\n", skillName)
+	fmt.Println(ui.Header("Skill Info: " + skillName))
 
 	client := registry.NewClient(registryURL)
 	result, err := client.GetSkill(skillName)
@@ -644,21 +742,26 @@ func runInfo(skillName string) error {
 	}
 
 	// Display skill metadata
-	fmt.Printf("Name:        %s\n", result.Name)
-	fmt.Printf("Author:      %s\n", result.Author)
-	fmt.Printf("Description: %s\n\n", result.Description)
+	fmt.Println(ui.KeyValue("Name", result.Name))
+	fmt.Println(ui.KeyValue("Author", result.Author))
+	fmt.Println(ui.KeyValue("Description", result.Description))
+	fmt.Println()
 
 	// Display versions
 	if len(result.Versions) > 0 {
-		fmt.Println("Versions:")
+		fmt.Println(ui.SubHeader("Versions"))
+		var rows [][]string
 		for _, v := range result.Versions {
-			fmt.Printf("  • %s (published %s)\n", v.Version, v.CreatedAt)
+			rows = append(rows, []string{v.Version, v.CreatedAt})
 		}
+		table := ui.Table([]string{"Version", "Published"}, rows)
+		fmt.Println(table)
 		fmt.Println()
 	}
 
 	// Installation instructions
-	fmt.Printf("Install:\n  skillz add %s\n", skillName)
+	fmt.Println(ui.SubHeader("Install"))
+	fmt.Println(ui.Code("  skillz add " + skillName))
 
 	return nil
 }

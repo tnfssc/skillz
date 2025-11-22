@@ -11,6 +11,7 @@ import (
 	"github.com/tnfssc/skillz/cli/internal/packager"
 	"github.com/tnfssc/skillz/cli/internal/parser"
 	"github.com/tnfssc/skillz/cli/internal/registry"
+	"github.com/tnfssc/skillz/cli/internal/ui"
 )
 
 var publishCmd = &cobra.Command{
@@ -36,7 +37,9 @@ func runPublish(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to parse manifest: %w", err)
 	}
 
-	fmt.Printf("Publishing %s@%s...\n", manifest.Name, manifest.Version)
+	fmt.Println(ui.Header("Publish Skill"))
+	fmt.Println(ui.Info(fmt.Sprintf("Publishing %s@%s", manifest.Name, manifest.Version)))
+	fmt.Println()
 
 	// Load credentials
 	creds, err := auth.LoadCredentials()
@@ -51,7 +54,7 @@ func runPublish(cmd *cobra.Command, args []string) error {
 	tarballName := fmt.Sprintf("%s-%s.tgz", manifest.Name, manifest.Version)
 	tarballPath := filepath.Join(os.TempDir(), tarballName)
 
-	fmt.Println("📦 Creating package...")
+	fmt.Println(ui.SubHeader("Creating Package"))
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -63,12 +66,14 @@ func runPublish(cmd *cobra.Command, args []string) error {
 	defer func() { _ = os.Remove(tarballPath) }()
 
 	// Publish
-	fmt.Println("🚀 Uploading to registry...")
+	fmt.Println()
+	fmt.Println(ui.SubHeader("Uploading to Registry"))
 	client := registry.NewClient(registryURL)
 	if err := client.Publish(manifest.Name, manifest.Version, tarballPath, creds.Token); err != nil {
 		return err
 	}
 
-	fmt.Printf("✅ Successfully published %s@%s!\n", manifest.Name, manifest.Version)
+	fmt.Println()
+	fmt.Println(ui.Success(fmt.Sprintf("Successfully published %s@%s!", manifest.Name, manifest.Version)))
 	return nil
 }

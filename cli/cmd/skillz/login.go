@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/tnfssc/skillz/cli/internal/auth"
+	"github.com/tnfssc/skillz/cli/internal/ui"
 )
 
 var loginCmd = &cobra.Command{
@@ -40,7 +41,9 @@ func runLogin(cmd *cobra.Command, args []string) error {
 	if loginToken != "" {
 		token = loginToken
 	} else {
-		fmt.Println("Please visit https://skillz.dev/auth/token to generate an API token.")
+		fmt.Println(ui.Header("Login to Skillz Registry"))
+		fmt.Println(ui.Info("Please visit https://skillz.dev/auth/token to generate an API token."))
+		fmt.Println()
 		fmt.Print("Enter your API Token: ")
 		reader := bufio.NewReader(os.Stdin)
 		token, err = reader.ReadString('\n')
@@ -68,6 +71,7 @@ func runLogin(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to save credentials: %w", err)
 	}
 
-	fmt.Println("✅ Successfully logged in!")
+	fmt.Println()
+	fmt.Println(ui.Success("Successfully logged in!"))
 	return nil
 }
