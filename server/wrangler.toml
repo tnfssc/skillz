@@ -2,6 +2,7 @@ name = "skillz-api"
 main = "src/index.tsx"
 compatibility_date = "2024-11-18"
 workers_dev = true
+account_id = "bc66793c4fd9901eac93dafe66f49d80"
 assets = { directory = "public" }
 
 [build]
