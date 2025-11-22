@@ -18,7 +18,7 @@ INSERT INTO user (id, name, email, email_verified, created_at, updated_at) VALUE
 
 -- Skills
 INSERT INTO skills (id, name, description, author, author_id, repository, homepage, license, created_at, updated_at) VALUES
-(1, 'data-analyzer', 'Powerful data analysis and visualization skill for Claude', 'alice', 'user_1', 'https://github.com/alice/data-analyzer', 'https://skills.example.com/data-analyzer', 'MIT', 1700100000, 1700500000),
+(1, 'data-analyzer', 'Powerful data analysis and visualization skill for Skillz', 'alice', 'user_1', 'https://github.com/alice/data-analyzer', 'https://skills.example.com/data-analyzer', 'MIT', 1700100000, 1700500000),
 (2, 'code-formatter', 'Automated code formatting and linting skill', 'bob', 'user_2', 'https://github.com/bob/code-formatter', NULL, 'Apache-2.0', 1700200000, 1700200000),
 (3, 'weather-reporter', 'Real-time weather updates and forecasts', 'alice', 'user_1', 'https://github.com/alice/weather-reporter', NULL, 'ISC', 1700300000, 1700300000),
 (4, 'image-generator', 'Generate images from text descriptions using AI', 'alice', 'user_1', 'https://github.com/alice/image-generator', NULL, 'MIT', 1700400000, 1700400000),

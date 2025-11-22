@@ -72,7 +72,7 @@ type SkillConfig struct {
 // Constraints defines platform and version requirements
 type Constraints struct {
 	OS            []string `toon:"os,omitempty"`
-	ClaudeVersion *string  `toon:"claude-version,omitempty"`
+	SkillzVersion *string  `toon:"skillz-version,omitempty"`
 }
 
 // Integrity holds security verification data

@@ -264,7 +264,7 @@ Describe what this skill does and when to use it.
 
 ## Instructions
 
-1. Step-by-step instructions for Claude to follow
+1. Step-by-step instructions to follow
 2. Be specific and clear
 3. Include examples if helpful
 

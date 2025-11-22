@@ -34,15 +34,18 @@ curl http://localhost:8787/api/v1/stats
 **What You'll See**:
 
 1. **Homepage** - Hero with gradient title "+ search
+
    - 🔥 Trending Skills section (5 skills displayed)
    - ✨ Latest Skills section (5 skills displayed)
    - Getting Started code snippet
 
 2. **Browse** - http://localhost:8788/skills
+
    - All skills in grid layout
    - Search functionality
 
 3. **Skill Details** - http://localhost:8788/skills/data-analyzer
+
    - Complete skill information
    - 3 versions listed
    - User ratings (4.5★)
@@ -115,11 +118,12 @@ http://localhost:8788/docs
 **HTML Output Confirmed**:
 
 ```html
-<h1>Package Manager for Claude Skills</h1>
+<h1>Package Manager for Skillz</h1>
 <h2>🔥 Trending Skills</h2>
 
-Cards visible: - excel-wizard (by bob) - api-tester (by carol) - document-generator (by alice) - code-reviewer (by bob)
-- data-analyzer (by alice)
+Cards visible: - excel-wizard (by bob) - api-tester (by carol) -
+document-generator (by alice) - code-reviewer (by bob) - data-analyzer (by
+alice)
 
 <h2>✨ Latest Skills</h2>
 [Same 5 skills]

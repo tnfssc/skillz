@@ -12,10 +12,10 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
         <div class="container mx-auto max-w-5xl">
           <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
             The Package Manager for <br />
-            Claude Skills
+            Skillz
           </h1>
           <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Discover, share, and manage Claude Skills with dependencies, versioning, and a beautiful registry.
+            Discover, share, and manage Skillz with dependencies, versioning, and a beautiful registry.
           </p>
 
           <form action="/skills" method="get" class="max-w-xl mx-auto mb-8">
@@ -95,7 +95,7 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
         <div class="bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border border-primary/20 rounded-2xl p-12 text-center">
           <h2 class="text-3xl font-bold mb-4">Ready to Build?</h2>
           <p class="text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
-            Install the Skillz CLI and start publishing your own Claude Skills today.
+            Install the Skillz CLI and start publishing your own intelligence packages today.
           </p>
 
           <div class="inline-block bg-slate-950 border border-slate-800 rounded-lg p-6 shadow-2xl">

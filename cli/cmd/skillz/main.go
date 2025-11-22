@@ -25,8 +25,8 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "skillz",
-		Short: "Package manager for Claude Skills",
-		Long: `Skillz is a package manager for Claude Skills and MCP servers.
+		Short: "Package manager for Skillz",
+		Long: `Skillz is a package manager for intelligence packages and MCP servers.
 It provides dependency management, versioning, and a registry for skills.`,
 		Version: version,
 	}
@@ -248,7 +248,7 @@ func runInit() error {
 		// Set constraints only if we have non-empty values
 		Constraints: &config.Constraints{
 			OS: []string{"linux", "darwin", "windows"},
-			// ClaudeVersion is nil, will be omitted
+			// SkillzVersion is nil, will be omitted
 		},
 	}
 
@@ -263,7 +263,7 @@ func runInit() error {
 			"## Purpose\n\n" +
 			"Describe what this skill does and when to use it.\n\n" +
 			"## Instructions\n\n" +
-			"1. Step-by-step instructions for Claude to follow\n" +
+			"1. Step-by-step instructions to follow\n" +
 			"2. Be specific and clear\n" +
 			"3. Include examples if helpful\n\n" +
 			"## Examples\n\n" +

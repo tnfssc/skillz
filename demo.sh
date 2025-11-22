@@ -22,7 +22,7 @@ echo ""
 # Test 1: Initialize a new project
 echo "✨ Test 1: Initialize a new skill project"
 echo "-------------------------------------------"
-echo -e "my-awesome-skill\n1.0.0\nAn awesome Claude skill\nDemo User\nSKILL.md" | $SKILLZ init
+echo -e "my-awesome-skill\n1.0.0\nAn awesome intelligence package\nDemo User\nSKILL.md" | $SKILLZ init
 echo ""
 
 # Show created files

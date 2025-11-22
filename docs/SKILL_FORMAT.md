@@ -2,7 +2,7 @@
 
 ## Overview
 
-`SKILL.md` is the main entry point for a Claude skill. It contains instructions, context, and workflow definitions that Claude uses to execute the skill.
+`SKILL.md` is the main entry point for a Skillz package. It contains instructions, context, and workflow definitions that are used to execute the skill.
 
 ## Structure
 
@@ -25,7 +25,7 @@ Detailed explanation of the skill's purpose and use cases.
 
 ## Instructions
 
-Step-by-step instructions for Claude to follow:
+Step-by-step instructions to follow:
 
 1. First, analyze the user's input...
 2. Then, perform validation...
@@ -80,7 +80,7 @@ Any additional information, tips, or caveats.
 ## Best Practices
 
 1. **Be Specific**: Provide clear, unambiguous instructions
-2. **Include Examples**: Real-world examples help Claude understand intent
+2. **Include Examples**: Real-world examples help understand intent
 3. **Document Dependencies**: List all required MCP tools and skills
 4. **Error Handling**: Include guidance for common failure modes
 5. **Version Appropriately**: Update when changing skill behavior

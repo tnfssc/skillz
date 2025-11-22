@@ -7,24 +7,28 @@
 **Demo Skills Added:**
 
 1. **data-analyzer** (by alice)
+
    - 3 versions (1.0.0, 1.1.0, 1.2.0)
    - Tags: data, analytics, visualization
    - 1,580 total downloads
    - 2 reviews (avg: 4.5★)
 
 2. **code-reviewer** (by bob)
+
    - 3 versions (1.0.0, 1.1.0, 2.0.0)
    - Tags: code, review, quality
    - 1,260 downloads
    - 2 reviews (avg: 5.0★)
 
 3. **document-generator** (by alice)
+
    - 2 versions (1.0.0, 1.1.0)
    - Tags: document, generation, pdf
    - 840 downloads
    - 1 review (5.0★)
 
 4. **api-tester** (by carol)
+
    - 3 versions (1.0.0, 1.0.1, 1.1.0)
    - Tags: api, testing, automation
    - 675 downloads
@@ -224,7 +228,7 @@ curl http://localhost:8787/api/v1/stats
 
 ### Homepage
 
-- **Hero**: Large gradient title "Package Manager for Claude Skills"
+- **Hero**: Large gradient title "Package Manager for Skillz"
 - **Search Bar**: Prominent search input
 - **Trending Section**: 6 most downloaded skills in card grid
 - **Latest Section**: 6 newest skills
@@ -315,7 +319,7 @@ go build -o skillz ./cmd/skillz
 
 ## 🎉 Summary
 
-You now have a **complete, working package manager** for Claude Skills with:
+You now have a **complete, working package manager** for Skillz with:
 
 ✅ Functional CLI tool (Go)
 ✅ REST API (Cloudflare Workers + Hono)
