@@ -1,49 +1,54 @@
-# Skillz Monorepo - Getting Started
+# Skillz - Getting Started
 
 ## What's Been Built
 
-A complete monorepo structure for the Skillz package manager with:
+A complete platform for the Skillz package manager with:
 
 ### ✅ Go CLI Tool
 
-- Full command structure (init, add, install, update, remove, list, search, info)
-- Skillz.yaml parser with validation
+- Full command structure (init, add, install, update, remove, list, search, info, publish)
+- Skillz.toon parser with validation (TOON format)
 - Type definitions for manifest and lock files
+- Integrity checking with SHA256 checksums
 - Built and working at `./dist/skillz`
 
-### ✅ Cloudflare Workers API (Hono)
+### ✅ Cloudflare Workers API (Hono SSR)
 
-- Edge-native API structure
+- Edge-native API with server-side rendering
 - D1 database integration (Drizzle ORM)
-- R2 storage bindings
-- Vectorize for semantic search
-- Core API endpoints defined
+- R2 storage for package tarballs
+- Better-auth authentication (Google OAuth)
+- Upstash Redis for rate limiting
+- Responsive UI with Tailwind CSS
+- Interactive documentation pages
 
-### ✅ Packages
+### ✅ Database
 
-- `@skillz/shared` - Shared TypeScript types
-- `@skillz/db` - Drizzle ORM schema for D1 database
+- Drizzle ORM schema for D1 database
+- User authentication tables
+- Skills and versions registry
+- Migration system
 
 ### ✅ Infrastructure
 
-- pnpm workspaces for monorepo
+- Simple, flat project structure
 - TypeScript configurations
 - Wrangler setup for Workers deployment
 - Comprehensive .gitignore
+- CI/CD with GitHub Actions
 
 ## Quick Start Commands
 
 ### Install Dependencies
 
 ```bash
-pnpm install
+# Server dependencies
+cd server && pnpm install
 ```
 
 ### Build CLI
 
 ```bash
-pnpm build:cli
-# or
 cd cli && go build -o ../dist/skillz ./cmd/skillz
 ```
 
@@ -57,7 +62,11 @@ cd cli && go build -o ../dist/skillz ./cmd/skillz
 ### Run API Locally
 
 ```bash
+# From root
 pnpm dev
+
+# Or directly in server
+cd server && pnpm dev
 ```
 
 ### Setup Cloudflare Resources
@@ -65,7 +74,7 @@ pnpm dev
 1. **Create D1 Database:**
 
 ```bash
-cd apps/api
+cd server
 wrangler d1 create skillz-registry
 # Copy the database_id to wrangler.toml
 ```
@@ -76,89 +85,52 @@ wrangler d1 create skillz-registry
 wrangler r2 bucket create skillz-packages
 ```
 
-3. **Create Vectorize Index:**
+3. **Run Database Migrations:**
 
 ```bash
-wrangler vectorize create skillz-embeddings --dimensions=768 --metric=cosine
-```
-
-4. **Run Database Migrations:**
-
-```bash
-cd ../../packages/db
-pnpm drizzle-kit generate
-cd ../../apps/api
-wrangler d1 execute skillz-registry --file=../../packages/db/migrations/0001_initial.sql
+cd server
+pnpm run db:migrate:local  # For local development
+pnpm run db:migrate        # For production
 ```
 
 ## Project Structure
 
 ```
-skillz.lat/
+skillz.hot/
 ├── cli/                    # Go CLI tool
 │   ├── cmd/skillz/        # Main entry point
 │   │   └── main.go        # ✅ CLI commands
 │   ├── internal/
-│   │   ├── config/        # ✅ Types
-│   │   ├── parser/        # ✅ YAML parser
-│   │   ├── installer/     # TODO: Installation logic
-│   │   ├── resolver/      # TODO: Dependency resolution
-│   │   └── git/           # TODO: Git operations
+│   │   ├── config/        # ✅ Types & config
+│   │   ├── parser/        # ✅ TOON parser
+│   │   ├── installer/     # ✅ Installation logic
+│   │   ├── resolver/      # ✅ Dependency resolution
+│   │   └── git/           # ✅ Git operations
 │   ├── go.mod            # ✅ Go dependencies
 │   └── go.sum
 │
-├── apps/
-│   ├── api/               # ✅ Cloudflare Workers API
-│   │   ├── src/index.ts  # ✅ Hono server
-│   │   ├── wrangler.toml # ✅ Cloudflare config
-│   │   └── package.json
-│   └── web/              # TODO: Web frontend
+├── server/                # ✅ Hono SSR app
+│   ├── src/              # Application code
+│   │   ├── index.tsx     # ✅ Main server
+│   │   ├── auth.ts       # ✅ Authentication
+│   │   ├── pages/        # ✅ SSR pages
+│   │   └── lib/          # ✅ Shared utilities
+│   ├── db/               # ✅ Database
+│   │   ├── src/          # Schema definitions
+│   │   └── migrations/   # SQL migrations
+│   ├── public/           # Static assets
+│   ├── wrangler.toml     # ✅ Cloudflare config
+│   └── package.json
 │
-├── packages/
-│   ├── shared/           # ✅ Shared TypeScript types
-│   │   ├── src/index.ts
-│   │   └── package.json
-│   └── db/               # ✅ Database schema
-│       ├── src/schema.ts # ✅ Drizzle ORM
-│       ├── drizzle.config.ts
-│       └── package.json
+├── examples/             # Example skills
+│   └── dummy-skill/      # ✅ Example skill
 │
-├── docs/                  # ✅ Documentation
-│   └── SKILL_FORMAT.md    # ✅ Skill format spec
+├── docs/                 # ✅ Documentation
+│   └── SKILL_FORMAT.md   # ✅ Skill format spec
 │
-├── package.json           # ✅ Root workspace config
-├── pnpm-workspace.yaml    # ✅ Workspace definition
-├── .gitignore            # ✅ Git ignore rules
-└── README.md             # ✅ Main README
-
+├── package.json          # ✅ Root scripts
+└── README.md            # ✅ Main README
 ```
-
-## Next Steps
-
-### Phase 1: CLI Foundation (Current)
-
-- [ ] Implement `skillz init` command
-- [ ] Implement `skillz add` command with registry lookup
-- [ ] Implement basic dependency resolution
-- [ ] Implement `skillz install` command
-- [ ] Add git repository support
-- [ ] Integrate with mise for CLI tools
-
-### Phase 2: Registry Backend
-
-- [ ] Implement user authentication (JWT)
-- [ ] Implement skill publishing endpoint
-- [ ] Implement search with Vectorize/D1 FTS
-- [ ] Add download tracking
-- [ ] Implement package storage on R2
-
-### Phase 3: Web Platform
-
-- [ ] Create Hono SSR web frontend
-- [ ] Build homepage with search
-- [ ] Create skill detail pages
-- [ ] Add user profiles
-- [ ] Documentation site
 
 ## Development Workflow
 
@@ -170,10 +142,10 @@ go run cmd/skillz/main.go <command>
 go test ./...
 ```
 
-### API Development
+### Server Development
 
 ```bash
-cd apps/api
+cd server
 pnpm dev           # Start local dev server
 pnpm deploy        # Deploy to Cloudflare
 ```
@@ -181,34 +153,35 @@ pnpm deploy        # Deploy to Cloudflare
 ### Database Changes
 
 ```bash
-cd packages/db
+cd server/db
 # Edit src/schema.ts
 pnpm drizzle-kit generate
-pnpm drizzle-kit migrate
+cd ..
+pnpm run db:migrate:local
 ```
 
 ## Architecture Decisions
 
-- **Monorepo**: Single repo for all components
+- **Simple Structure**: Flat layout with `cli/` and `server/` at root
 - **CLI**: Go for performance and easy distribution
-- **Backend**: Cloudflare Workers + Hono for edge performance
+- **Backend**: Cloudflare Workers + Hono for edge performance with SSR
 - **Database**: D1 (serverless SQLite) with Drizzle ORM
 - **Storage**: R2 for package tarballs
-- **Search**: Vectorize + Workers AI for semantic search
-- **Package Manager**: pnpm for efficient workspace management
+- **Auth**: Better-auth with Google OAuth
+- **Rate Limiting**: Upstash Redis
 
 ## Tech Stack Summary
 
-| Component | Technology                    | Status       |
-| --------- | ----------------------------- | ------------ |
-| CLI       | Go + Cobra                    | ✅ Built     |
-| API       | Cloudflare Workers + Hono     | ✅ Structure |
-| Web       | Cloudflare Workers + Hono SSR | 🚧 TODO      |
-| Database  | D1 + Drizzle ORM              | ✅ Schema    |
-| Storage   | Cloudflare R2                 | 🚧 Config    |
-| Search    | Vectorize + Workers AI        | 🚧 Config    |
-| Monorepo  | pnpm workspaces               | ✅ Setup     |
+| Component  | Technology                | Status    |
+| ---------- | ------------------------- | --------- |
+| CLI        | Go + Cobra                | ✅ Built  |
+| Server     | Cloudflare Workers + Hono | ✅ Built  |
+| UI         | Hono JSX + Tailwind CSS   | ✅ Built  |
+| Database   | D1 + Drizzle ORM          | ✅ Schema |
+| Storage    | Cloudflare R2             | ✅ Config |
+| Auth       | Better-auth               | ✅ Setup  |
+| Rate Limit | Upstash Redis             | ✅ Setup  |
 
 ---
 
-🎉 **The foundation is ready!** You can now start implementing the core CLI commands and expanding the API endpoints.
+🎉 **The platform is functional!** You can now publish and manage AI skills through the registry.

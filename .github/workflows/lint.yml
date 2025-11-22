@@ -34,28 +34,25 @@ jobs:
       - uses: jdx/mise-action@v2
 
       - name: Install Dependencies
-        run: pnpm install
+        run: |
+          cd server
+          pnpm install
 
       - name: Type Check
-        run: pnpm run typecheck
+        run: |
+          cd server
+          pnpm run typecheck
 
       - name: Lint
-        run: pnpm run lint
-
-      - name: Test API
         run: |
-          cd apps/api
+          cd server
+          pnpm run lint
+
+      - name: Test Server
+        run: |
+          cd server
           if npm run | grep -q "test"; then
             pnpm run test
           else
-            echo "No test script found for API"
-          fi
-
-      - name: Test Web
-        run: |
-          cd apps/web
-          if npm run | grep -q "test"; then
-            pnpm run test
-          else
-            echo "No test script found for Web"
+            echo "No test script found for server"
           fi

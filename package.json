@@ -3,22 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "description": "Package manager for Claude Skills",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "pnpm --filter @skillz/api dev",
-    "dev:web": "pnpm --filter @skillz/web dev",
-    "dev:all": "pnpm --parallel dev",
-    "build": "pnpm --recursive build",
-    "build:cli": "cd cli && go build -o ../dist/skillz ./cmd/skillz",
-    "deploy": "pnpm --filter @skillz/api deploy",
-    "deploy:web": "pnpm --filter @skillz/web deploy",
-    "typecheck": "pnpm --recursive typecheck",
-    "lint": "pnpm --recursive lint",
-    "test": "CI=true pnpm --recursive test",
-    "format": "prettier --write **/*.{js,ts,jsx,tsx,css,md,mdx,html,markdown,graphql,json,yml,yaml}"
+    "dev": "cd server && pnpm dev",
+    "build": "cd server && pnpm run build:css && pnpm run deploy",
+    "test": "cd server && pnpm test"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251121.0",

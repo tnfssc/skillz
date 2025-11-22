@@ -1,0 +1,48 @@
+name = "skillz-api"
+main = "src/index.tsx"
+compatibility_date = "2024-11-18"
+workers_dev = true
+assets = { directory = "public" }
+
+[build]
+command = ""
+
+[route]
+custom_domain = true
+pattern = "api.skillz.lat"
+zone_name = "skillz.lat"
+
+[observability]
+enabled = true
+
+
+[[d1_databases]]
+migrations_dir = "./db/migrations"
+binding = "DB"
+database_name = "skillz-registry"
+database_id = "1a3b4fcf-c920-400e-97fb-9b060c3dd6f4"
+preview_database_id = "1a3b4fcf-c920-400e-97fb-9b060c3dd6f4"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "skillz-index"
+
+[ai]
+binding = "AI"
+
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "skillz-packages"
+preview_bucket_name = "skillz-packages"
+
+# [[vectorize]]
+# binding = "VECTORIZE"
+# index_name = "skillz-embeddings"
+
+# [ai]
+# binding = "AI"
+
+[vars]
+ENVIRONMENT = "production"
+BETTER_AUTH_URL = "https://api.skillz.lat"

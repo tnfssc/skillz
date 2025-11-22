@@ -66,13 +66,13 @@ skillz install
 The Skillz ecosystem consists of three main components:
 
 1.  **CLI (`/cli`):** The command-line tool for managing projects and dependencies.
-2.  **Registry API (`/apps/api`):** The backend service hosting package metadata and tarballs.
-3.  **Database (`/packages/db`):** SQLite database (D1) storing registry state.
+2.  **Registry API (`/server`):** The backend service hosting package metadata and tarballs.
+3.  **Database (`/server/db`):** SQLite database (D1) storing registry state.
 
 ## 📚 Documentation
 
 - [CLI Documentation](cli/README.md) - Detailed usage guide for the `skillz` command.
-- [API Documentation](apps/api/README.md) - API reference for the registry.
+- [API Documentation](server/README.md) - API reference for the registry.
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute to Skillz.
 
 ## 🔐 Security

@@ -21,22 +21,22 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - name: Install API Dependencies
+      - name: Install Server Dependencies
         run: |
-          cd apps/api
+          cd server
           pnpm install
 
       - name: Setup Database
         run: |
-          cd apps/api
+          cd server
           pnpm run db:migrate:local
           pnpm run db:seed
 
-      - name: Start API Server
+      - name: Start Server
         run: |
-          cd apps/api
+          cd server
           pnpm run dev -- --port 8787 &
-          echo "Waiting for API to start..."
+          echo "Waiting for server to start..."
           timeout 30s bash -c 'until curl -s http://localhost:8787/api/v1/health; do sleep 1; done'
 
       - name: Run CLI Tests

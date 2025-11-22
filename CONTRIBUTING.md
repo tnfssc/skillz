@@ -13,7 +13,7 @@ We love your input! We want to make contributing to Skillz as easy and transpare
 
 - [mise](https://mise.jdx.dev) (for managing tool versions)
 
-### Setting up the Monorepo
+### Setting up the Project
 
 1.  Clone the repository:
 
@@ -22,14 +22,14 @@ We love your input! We want to make contributing to Skillz as easy and transpare
     cd skillz
     ```
 
-2.  Install API dependencies:
+2.  Install server dependencies:
 
     ```bash
-    cd apps/api
+    cd server
     pnpm install
     ```
 
-3.  Start the local API (required for CLI tests):
+3.  Start the local server (required for CLI tests):
     ```bash
     pnpm run dev
     ```

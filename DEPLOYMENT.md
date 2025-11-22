@@ -9,16 +9,16 @@ This guide describes how to deploy the Skillz platform (API and Web) to Cloudfla
 - [Upstash Account](https://upstash.com/) for Redis (Rate Limiting)
 - [Google Cloud Console](https://console.cloud.google.com/) project for OAuth
 
-## 1. API Deployment (`apps/api`)
+## 1. Server Deployment
 
-The API is a Cloudflare Worker using D1 (Database) and R2 (Storage).
+The server is a Cloudflare Worker with Hono SSR using D1 (Database) and R2 (Storage).
 
 ### Step 1: Set Secrets
 
 Set the required secrets:
 
 ```bash
-cd apps/api
+cd server
 
 # Google OAuth
 wrangler secret put GOOGLE_CLIENT_ID
@@ -36,47 +36,22 @@ The first deploy will automatically provision the D1 database and R2 bucket:
 ```bash
 pnpm run deploy
 # or from root:
-pnpm run deploy
+pnpm build
 ```
 
 > **Note**: The D1 database ID and R2 bucket name are already configured in `wrangler.toml`.
 
-## 2. Web Deployment (`apps/web`)
+## 2. Domain Setup
 
-The Web app is a static site (Vite + React) deployed to Cloudflare Pages.
+For a professional setup, configure custom domains in Cloudflare Dashboard:
 
-### Step 1: Build
+- Main site: `skillz.lat` → Worker (server)
 
-```bash
-pnpm --filter @skillz/web build
-```
+The server handles both the SSR frontend and API endpoints, so you only need one domain.
 
-### Step 2: Deploy
+### Environment Variables
 
-You can deploy directly using Wrangler:
-
-```bash
-cd apps/web
-pnpm run deploy
-# This runs: wrangler pages deploy dist
-```
-
-During the first deploy, you may be asked to create a new Pages project (e.g., `skillz-web`).
-
-### Step 3: Environment Variables
-
-For the web app to talk to the production API, you need to set the API URL.
-Since it's a static build, this is done at build time or via a `public/config.js` if dynamic.
-Currently, the web app uses `/api` proxy in dev. For production, you should update `apps/web/src/lib/api.ts` to point to your production API worker URL (e.g., `https://skillz-api-prod.<your-subdomain>.workers.dev`) or configure a custom domain.
-
-**Recommendation:**
-Update `apps/web/.env.production`:
-
-```
-VITE_API_URL=https://your-api-worker-url.workers.dev
-```
-
-And ensure your API client uses this variable.
+Update `server/.dev.vars` for local development and wrangler secrets for production:
 
 ## 3. CLI Release
 
@@ -100,4 +75,16 @@ Update `apps/web/.env.production` (create if needed):
 
 ```
 VITE_API_URL=https://api.skillz.lat
+```
+
+## Example Production Configuration
+
+```bash
+# Required environment variables (set via wrangler secret)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+BETTER_AUTH_URL=https://skillz.lat
+ENVIRONMENT=production
 ```
