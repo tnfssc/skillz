@@ -39,13 +39,15 @@ jobs:
           if [ "${{ matrix.goos }}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
-          go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o ../$BINARY_NAME ./cmd/skillz
+          go build -trimpath -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o ../$BINARY_NAME ./cmd/skillz
+          ls -lh ../$BINARY_NAME
 
       - name: Package the executable
         if: ${{ ! (matrix.goos == 'windows' && matrix.goarch == 'arm64') }}
         run: |
           sudo apt-get update && sudo apt-get install -y upx
           upx --best --lzma --force-macos skillz-*
+          ls -lh skillz-*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
