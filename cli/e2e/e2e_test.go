@@ -263,22 +263,22 @@ func buildCLI() (string, error) {
 func findProjectRoot(start string) string {
 	dir := start
 	for {
-		// Check for go.work which should be at the root of the workspace
-		if _, err := os.Stat(filepath.Join(dir, "go.work")); err == nil {
-			return dir
-		}
-		// Check for packages directory which is at the root
-		if _, err := os.Stat(filepath.Join(dir, "packages")); err == nil {
-			return dir
+		// Check for server directory which should be at the root
+		if _, err := os.Stat(filepath.Join(dir, "server")); err == nil {
+			// Verify cli directory also exists to be sure
+			if _, err := os.Stat(filepath.Join(dir, "cli")); err == nil {
+				return dir
+			}
 		}
 
 		parent := filepath.Dir(dir)
 		if parent == dir {
 			// We reached root and didn't find it.
 			// Fallback: assume we are in cli/e2e and need to go up two levels to root
-			// or one level to cli root?
-			// Let's try to find where 'cli' directory is a child
-			return start // This was the bug, returning start.
+			// This matches the typical structure: <root>/cli/e2e
+			// So start is <root>/cli/e2e, parent is <root>/cli, parent's parent is <root>
+			// But let's just return start if we fail, though it will likely fail later.
+			return start
 		}
 		dir = parent
 	}
