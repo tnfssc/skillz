@@ -1,5 +1,5 @@
 import { Ai } from "@cloudflare/ai";
-import { VectorizeIndex } from "@cloudflare/workers-types";
+import { VectorizeIndex, Fetcher, D1Database } from "@cloudflare/workers-types";
 import { generateEmbedding } from "./ai";
 import { drizzle } from "drizzle-orm/d1";
 import { skills } from "../../db/src/schema";
@@ -12,7 +12,7 @@ export interface SearchResult extends Skill {
 
 export async function searchSkills(
   query: string,
-  env: { AI: any; VECTORIZE: VectorizeIndex; DB: D1Database },
+  env: { AI: Fetcher; VECTORIZE: VectorizeIndex; DB: D1Database },
   limit: number = 20,
 ): Promise<SearchResult[]> {
   // 1. Generate embedding for the query
@@ -90,7 +90,7 @@ export async function searchSkills(
 
 export async function indexSkill(
   skill: { id: number; name: string; description: string | null },
-  env: { AI: any; VECTORIZE: VectorizeIndex },
+  env: { AI: Fetcher; VECTORIZE: VectorizeIndex },
 ) {
   const ai = new Ai(env.AI);
   const text = `${skill.name}: ${skill.description || ""}`;

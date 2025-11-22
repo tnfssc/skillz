@@ -6,8 +6,16 @@ import { generateEmbedding } from "../src/lib/ai";
 // This script is meant to be run as a Worker or via wrangler dev
 // It cannot be run directly with ts-node because it needs Cloudflare bindings
 
+import { VectorizeIndex, Fetcher, D1Database } from "@cloudflare/workers-types";
+
+interface Env {
+  DB: D1Database;
+  AI: Fetcher;
+  VECTORIZE: VectorizeIndex;
+}
+
 export default {
-  async fetch(request: Request, env: any, ctx: any): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     if (request.url.endsWith("/backfill")) {
       const db = drizzle(env.DB);
       const ai = new Ai(env.AI);

@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { Fetcher, VectorizeIndex, D1Database, R2Bucket } from "@cloudflare/workers-types";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { drizzle } from "drizzle-orm/d1";
@@ -19,7 +20,7 @@ type Bindings = {
   DB: D1Database;
   BUCKET: R2Bucket;
   VECTORIZE: VectorizeIndex;
-  AI: any;
+  AI: Fetcher;
   UPSTASH_REDIS_REST_URL: string;
   UPSTASH_REDIS_REST_TOKEN: string;
   GOOGLE_CLIENT_ID: string;
