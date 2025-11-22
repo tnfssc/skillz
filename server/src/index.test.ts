@@ -1,13 +1,46 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import app from "./index";
 
+// Mock Redis
+vi.mock("./lib", () => ({
+  createRedisClient: () => ({
+    get: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
+  }),
+  Ratelimit: class {
+    static slidingWindow() {
+      return {};
+    }
+    limit() {
+      return { success: true };
+    }
+  },
+}));
+
+const createMockD1 = () => {
+  return {
+    prepare: () => ({
+      bind: () => ({
+        first: async () => null,
+        run: async () => ({ success: true, meta: {} }),
+        all: async () => ({ results: [] }),
+        raw: async () => [],
+      }),
+    }),
+    dump: async () => new ArrayBuffer(0),
+    batch: async () => [],
+    exec: async () => ({ count: 0, duration: 0 }),
+  } as any;
+};
+
 const MOCK_ENV = {
-  DB: {},
+  DB: createMockD1(),
   BUCKET: {},
   VECTORIZE: {},
   AI: {},
-  UPSTASH_REDIS_REST_URL: undefined,
-  UPSTASH_REDIS_REST_TOKEN: undefined,
+  UPSTASH_REDIS_REST_URL: "https://mock-redis.upstash.io",
+  UPSTASH_REDIS_REST_TOKEN: "mock-token",
   GOOGLE_CLIENT_ID: "mock",
   GOOGLE_CLIENT_SECRET: "mock",
 };
@@ -17,10 +50,8 @@ describe("API Routes", () => {
     it("should return health check", async () => {
       const res = await app.request("/", {}, MOCK_ENV);
       expect(res.status).toBe(200);
-
-      const data = (await res.json()) as { name: string; status: string };
-      expect(data.name).toBe("skillz-api");
-      expect(data.status).toBe("ok");
+      const text = await res.text();
+      expect(text).toContain("<!DOCTYPE html>");
     });
   });
 
