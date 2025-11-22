@@ -38,6 +38,8 @@ jobs:
           pnpm run dev -- --port 8787 &
           echo "Waiting for server to start..."
           timeout 30s bash -c 'until curl -s http://localhost:8787/api/v1/health; do sleep 1; done'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Run CLI Tests
         run: |
