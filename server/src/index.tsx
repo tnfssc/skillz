@@ -61,9 +61,9 @@ app.get("/", async (c) => {
   const db = drizzle(c.env.DB);
   const auth = createAuth(c.env);
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
-  
+
   const trendingSkills = await db.select().from(skills).orderBy(desc(skills.createdAt)).limit(6);
-  
+
   return c.render(<HomePage skills={trendingSkills} user={session?.user} />, { title: "Home" });
 });
 
@@ -81,16 +81,16 @@ app.get("/skills", async (c) => {
   const db = drizzle(c.env.DB);
   const auth = createAuth(c.env);
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
-  
+
   const query = c.req.query("q");
   let allSkills;
-  
+
   if (query) {
     allSkills = await searchSkills(query, c.env);
   } else {
     allSkills = await db.select().from(skills).orderBy(desc(skills.createdAt)).limit(20);
   }
-  
+
   return c.render(<SkillsPage skills={allSkills} query={query} user={session?.user} />, { title: "Skills" });
 });
 
@@ -99,28 +99,27 @@ app.get("/skills/:name", async (c) => {
   const db = drizzle(c.env.DB);
   const auth = createAuth(c.env);
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
-  
+
   const skill = await db.select().from(skills).where(eq(skills.name, name)).limit(1);
-  
+
   if (skill.length === 0) {
     return c.notFound();
   }
-  
+
   const skillVersions = await db
     .select()
     .from(versions)
     .where(eq(versions.skillId, skill[0].id))
     .orderBy(desc(versions.createdAt));
-  
+
   const parsedVersions = skillVersions.map((v) => ({
     ...v,
     manifest: JSON.parse(v.manifest as string),
   }));
-  
-  return c.render(
-    <SkillDetailPage skill={skill[0]} versions={parsedVersions} user={session?.user} />,
-    { title: skill[0].name }
-  );
+
+  return c.render(<SkillDetailPage skill={skill[0]} versions={parsedVersions} user={session?.user} />, {
+    title: skill[0].name,
+  });
 });
 
 // Auth endpoints
@@ -196,7 +195,7 @@ app.post("/api/dev/backfill", async (c) => {
   }
 
   const db = drizzle(c.env.DB);
-  
+
   try {
     const allSkills = await db.select().from(skills);
     let count = 0;
@@ -204,10 +203,7 @@ app.post("/api/dev/backfill", async (c) => {
 
     for (const skill of allSkills) {
       try {
-        await indexSkill(
-          { id: skill.id, name: skill.name, description: skill.description },
-          c.env
-        );
+        await indexSkill({ id: skill.id, name: skill.name, description: skill.description }, c.env);
         count++;
       } catch (e) {
         console.error(`Failed to index ${skill.name}:`, e);
@@ -215,10 +211,10 @@ app.post("/api/dev/backfill", async (c) => {
       }
     }
 
-    return c.json({ 
-      success: true, 
-      message: `Indexed ${count} skills`, 
-      errors: errors.length > 0 ? errors : undefined 
+    return c.json({
+      success: true,
+      message: `Indexed ${count} skills`,
+      errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
     console.error("Backfill failed:", error);
@@ -519,8 +515,8 @@ api.post("/skills", authMiddleware, async (c) => {
     c.executionCtx.waitUntil(
       indexSkill(
         { id: skillId, name, description: "Published via CLI" }, // TODO: Get description from manifest
-        c.env
-      )
+        c.env,
+      ),
     );
 
     return c.json({ success: true, name, version });
@@ -574,7 +570,6 @@ api.get("/users/:username", async (c) => {
 });
 
 // Search endpoint
-
 
 // Stats endpoint
 api.get("/stats", async (c) => {

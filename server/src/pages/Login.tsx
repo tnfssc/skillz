@@ -9,9 +9,7 @@ export function LoginPage() {
         <div class="max-w-md mx-auto">
           <Card class="p-8">
             <h1 class="text-3xl font-bold mb-2 text-center">Welcome Back</h1>
-            <p class="text-slate-400 text-center mb-8">
-              Sign in to publish and manage your skills
-            </p>
+            <p class="text-slate-400 text-center mb-8">Sign in to publish and manage your skills</p>
 
             <form action="/api/auth/sign-in/social" method="post">
               <input type="hidden" name="provider" value="google" />

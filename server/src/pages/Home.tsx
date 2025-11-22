@@ -11,7 +11,8 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
       <section class="py-24 px-4 text-center bg-gradient-to-b from-primary/10 via-transparent to-transparent">
         <div class="container mx-auto max-w-5xl">
           <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-            The Package Manager for <br />Claude Skills
+            The Package Manager for <br />
+            Claude Skills
           </h1>
           <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
             Discover, share, and manage Claude Skills with dependencies, versioning, and a beautiful registry.
@@ -25,10 +26,7 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
                 placeholder="Search for skills..."
                 class="h-14 pl-6 pr-32 text-base rounded-full shadow-2xl border-slate-700/50"
               />
-              <Button
-                type="submit"
-                class="absolute right-2 top-2 h-10 rounded-full"
-              >
+              <Button type="submit" class="absolute right-2 top-2 h-10 rounded-full">
                 Search
               </Button>
             </div>
@@ -50,7 +48,9 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-3xl font-bold">🔥 Trending Skills</h2>
           <a href="/skills">
-            <Button variant="ghost" size="sm">View All</Button>
+            <Button variant="ghost" size="sm">
+              View All
+            </Button>
           </a>
         </div>
 
@@ -67,11 +67,9 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
               <a href={`/skills/${skill.name}`} class="block group">
                 <Card class="h-full flex flex-col transition-all hover:shadow-2xl hover:border-primary/50 hover:-translate-y-1">
                   <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-semibold group-hover:text-primary transition-colors">
-                      {skill.name}
-                    </h3>
+                    <h3 class="text-xl font-semibold group-hover:text-primary transition-colors">{skill.name}</h3>
                   </div>
-                  
+
                   <p class="text-slate-400 mb-6 flex-1 line-clamp-3">
                     {skill.description || "No description provided."}
                   </p>
@@ -99,11 +97,9 @@ export function HomePage({ skills, user }: { skills: Skill[]; user?: User }) {
           <p class="text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
             Install the Skillz CLI and start publishing your own Claude Skills today.
           </p>
-          
+
           <div class="inline-block bg-slate-950 border border-slate-800 rounded-lg p-6 shadow-2xl">
-            <code class="text-primary font-mono">
-              curl -fsSL https://skillz.lat/install.sh | sh
-            </code>
+            <code class="text-primary font-mono">curl -fsSL https://skillz.lat/install.sh | sh</code>
           </div>
         </div>
       </section>

@@ -12,16 +12,28 @@ export function DocsPage({ user }: { user?: User }) {
             <Card class="p-4">
               <h3 class="font-bold mb-4 pb-2 border-b border-slate-700">CLI Documentation</h3>
               <nav class="flex flex-col gap-2">
-                <a href="#installation" class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                <a
+                  href="#installation"
+                  class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                >
                   Installation
                 </a>
-                <a href="#commands" class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                <a
+                  href="#commands"
+                  class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                >
                   Commands
                 </a>
-                <a href="#configuration" class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                <a
+                  href="#configuration"
+                  class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                >
                   Configuration
                 </a>
-                <a href="#manifest" class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                <a
+                  href="#manifest"
+                  class="px-3 py-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                >
                   Manifest (skillz.toon)
                 </a>
               </nav>
@@ -39,9 +51,7 @@ export function DocsPage({ user }: { user?: User }) {
 
               <h2 class="text-2xl font-semibold mb-4">Automated Install (Linux/macOS)</h2>
               <Card class="mb-8">
-                <p class="text-slate-400 mb-4">
-                  The easiest way to install Skillz is using the installation script.
-                </p>
+                <p class="text-slate-400 mb-4">The easiest way to install Skillz is using the installation script.</p>
                 <pre class="bg-slate-950 p-4 rounded-lg overflow-x-auto">
                   <code class="text-primary">curl -fsSL https://skillz.lat/install.sh | sh</code>
                 </pre>
@@ -49,9 +59,7 @@ export function DocsPage({ user }: { user?: User }) {
 
               <h2 class="text-2xl font-semibold mb-4">From Source</h2>
               <Card class="mb-8">
-                <p class="text-slate-400 mb-4">
-                  If you have Go installed, you can install directly from the source.
-                </p>
+                <p class="text-slate-400 mb-4">If you have Go installed, you can install directly from the source.</p>
                 <pre class="bg-slate-950 p-4 rounded-lg overflow-x-auto">
                   <code class="text-primary">go install github.com/tnfssc/skillz/cli/cmd/skillz@latest</code>
                 </pre>
@@ -67,9 +75,7 @@ export function DocsPage({ user }: { user?: User }) {
             {/* Commands */}
             <section id="commands">
               <h1 class="text-4xl font-bold mb-4">Commands</h1>
-              <p class="text-lg text-slate-400 mb-8">
-                Reference guide for the available CLI commands.
-              </p>
+              <p class="text-lg text-slate-400 mb-8">Reference guide for the available CLI commands.</p>
 
               <div class="space-y-6">
                 <CommandCard
@@ -98,31 +104,17 @@ skillz login`}
                   command="skillz publish"
                   description="Publish the current package to the registry. Requires authentication."
                 />
-                <CommandCard
-                  command="skillz list"
-                  description="List all installed skills and their versions."
-                />
-                <CommandCard
-                  command="skillz search <query>"
-                  description="Search the registry for skills."
-                />
-                <CommandCard
-                  command="skillz info <name>"
-                  description="Show detailed information about a skill."
-                />
-                <CommandCard
-                  command="skillz remove <name>"
-                  description="Remove a skill dependency from skillz.toon."
-                />
+                <CommandCard command="skillz list" description="List all installed skills and their versions." />
+                <CommandCard command="skillz search <query>" description="Search the registry for skills." />
+                <CommandCard command="skillz info <name>" description="Show detailed information about a skill." />
+                <CommandCard command="skillz remove <name>" description="Remove a skill dependency from skillz.toon." />
               </div>
             </section>
 
             {/* Configuration */}
             <section id="configuration">
               <h1 class="text-4xl font-bold mb-4">Configuration</h1>
-              <p class="text-lg text-slate-400 mb-8">
-                The CLI can be configured via environment variables.
-              </p>
+              <p class="text-lg text-slate-400 mb-8">The CLI can be configured via environment variables.</p>
 
               <Card class="overflow-hidden p-0">
                 <table class="w-full border-collapse">
@@ -153,7 +145,7 @@ skillz login`}
 
               <Card>
                 <pre class="bg-slate-950 p-6 rounded-lg overflow-x-auto text-sm leading-relaxed">
-{`manifest-version: 1
+                  {`manifest-version: 1
 name: my-agent
 version: 1.0.0
 description: A helpful AI agent

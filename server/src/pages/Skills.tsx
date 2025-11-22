@@ -10,9 +10,7 @@ export function SkillsPage({ skills, query, user }: { skills: Skill[]; query?: s
       <div class="container mx-auto px-4 py-8">
         <div class="mb-8">
           <h1 class="text-4xl font-bold mb-4">Explore Skills</h1>
-          <p class="text-slate-400 text-lg mb-6">
-            Discover AI skills and capabilities to enhance your agents.
-          </p>
+          <p class="text-slate-400 text-lg mb-6">Discover AI skills and capabilities to enhance your agents.</p>
 
           <form action="/skills" method="get" class="max-w-2xl">
             <div class="relative">
@@ -23,11 +21,7 @@ export function SkillsPage({ skills, query, user }: { skills: Skill[]; query?: s
                 placeholder="Search skills..."
                 class="h-12 pl-4 pr-24"
               />
-              <Button
-                type="submit"
-                size="sm"
-                class="absolute right-2 top-2 h-8"
-              >
+              <Button type="submit" size="sm" class="absolute right-2 top-2 h-8">
                 Search
               </Button>
             </div>
@@ -47,11 +41,9 @@ export function SkillsPage({ skills, query, user }: { skills: Skill[]; query?: s
               <a href={`/skills/${skill.name}`} class="block group">
                 <Card class="h-full flex flex-col transition-all hover:shadow-2xl hover:border-primary/50 hover:-translate-y-1">
                   <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-semibold group-hover:text-primary transition-colors">
-                      {skill.name}
-                    </h3>
+                    <h3 class="text-xl font-semibold group-hover:text-primary transition-colors">{skill.name}</h3>
                   </div>
-                  
+
                   <p class="text-slate-400 mb-6 flex-1 line-clamp-3">
                     {skill.description || "No description provided."}
                   </p>

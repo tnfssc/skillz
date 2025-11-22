@@ -8,9 +8,17 @@ type ButtonProps = PropsWithChildren<{
   [key: string]: unknown;
 }>;
 
-export function Button({ variant = "primary", size = "md", type = "button", class: className, children, ...props }: ButtonProps) {
-  const baseStyles = "inline-flex items-center justify-center rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
-  
+export function Button({
+  variant = "primary",
+  size = "md",
+  type = "button",
+  class: className,
+  children,
+  ...props
+}: ButtonProps) {
+  const baseStyles =
+    "inline-flex items-center justify-center rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
+
   const variants = {
     primary: "bg-primary hover:bg-primary-600 text-white shadow-lg shadow-primary/25 border border-transparent",
     secondary: "bg-secondary hover:bg-secondary-600 text-white shadow-lg shadow-secondary/25 border border-transparent",
@@ -26,11 +34,7 @@ export function Button({ variant = "primary", size = "md", type = "button", clas
   };
 
   return (
-    <button
-      type={type}
-      class={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className || ""}`}
-      {...props}
-    >
+    <button type={type} class={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className || ""}`} {...props}>
       {children}
     </button>
   );

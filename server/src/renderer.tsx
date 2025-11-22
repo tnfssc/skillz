@@ -7,7 +7,7 @@ declare module "hono" {
   }
 }
 
-export const renderer = jsxRenderer(({ children, title }: {children?: Child; title?: string}) => {
+export const renderer = jsxRenderer(({ children, title }: { children?: Child; title?: string }) => {
   return (
     <html lang="en">
       <head>
