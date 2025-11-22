@@ -35,22 +35,36 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: |
           cd cli
-          go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o ../skillz-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/skillz
+          BINARY_NAME=skillz-${{ matrix.goos }}-${{ matrix.goarch }}
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" -o ../$BINARY_NAME ./cmd/skillz
 
-      - name: Rename the executable (Windows)
-        if: ${{ matrix.goos == 'windows' }}
-        run: mv skillz-${{ matrix.goos }}-${{ matrix.goarch }} skillz-${{ matrix.goos }}-${{ matrix.goarch }}.exe
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skillz-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: skillz-*
+          if-no-files-found: error
+
+  release:
+    needs: binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - name: Generate Checksums
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          sha256sum skillz-* > SHA256SUMS
+          cd artifacts
+          sha256sum * > SHA256SUMS
 
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            skillz-${{ matrix.goos }}-${{ matrix.goarch }}
-            skillz-${{ matrix.goos }}-${{ matrix.goarch }}.exe
-            SHA256SUMS
+            artifacts/*
