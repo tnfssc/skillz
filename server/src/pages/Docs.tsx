@@ -53,7 +53,7 @@ export function DocsPage({ user }: { user?: User }) {
               <Card class="mb-8">
                 <p class="text-slate-400 mb-4">The easiest way to install Skillz is using the installation script.</p>
                 <pre class="bg-slate-950 p-4 rounded-lg overflow-x-auto">
-                  <code class="text-primary">curl -fsSL https://skillz.lat/install.sh | sh</code>
+                  <code class="text-primary">curl -fsSL https://raw.githubusercontent.com/tnfssc/skillz/refs/heads/develop/install.sh | sh</code>
                 </pre>
               </Card>
 
