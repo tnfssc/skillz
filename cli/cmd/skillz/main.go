@@ -162,14 +162,19 @@ func listCmd() *cobra.Command {
 }
 
 func searchCmd() *cobra.Command {
-	return &cobra.Command{
+	var author, license, tagsStr string
+	cmd := &cobra.Command{
 		Use:   "search <query>",
 		Short: "Search the skill registry",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runSearch(args[0])
+			return runSearch(args[0], author, license, tagsStr)
 		},
 	}
+	cmd.Flags().StringVarP(&author, "author", "a", "", "Filter by author")
+	cmd.Flags().StringVarP(&license, "license", "l", "", "Filter by license (e.g., MIT, Apache-2.0)")
+	cmd.Flags().StringVarP(&tagsStr, "tags", "t", "", "Filter by tags (comma-separated)")
+	return cmd
 }
 
 func infoCmd() *cobra.Command {
@@ -700,11 +705,27 @@ func runList() error {
 	return nil
 }
 
-func runSearch(query string) error {
+func runSearch(query, author, license, tagsStr string) error {
 	fmt.Println(ui.Header("Search: " + query))
 
+	// Build filter message
+	var filters []string
+	if author != "" {
+		filters = append(filters, "Author: "+author)
+	}
+	if license != "" {
+		filters = append(filters, "License: "+license)
+	}
+	if tagsStr != "" {
+		filters = append(filters, "Tags: "+tagsStr)
+	}
+	if len(filters) > 0 {
+		fmt.Println(ui.Info("Filters: " + strings.Join(filters, ", ")))
+	}
+	fmt.Println()
+
 	client := registry.NewClient(registryURL)
-	result, err := client.SearchSkills(query)
+	result, err := client.SearchSkills(query, author, license, tagsStr)
 	if err != nil {
 		return fmt.Errorf("search failed: %w", err)
 	}
@@ -719,6 +740,21 @@ func runSearch(query string) error {
 
 	for _, skill := range result.Skills {
 		skillBox := ui.StyleBold.Render(ui.IconPackage + " " + skill.Name)
+
+		// Add relevance score if available
+		if skill.Score > 0 {
+			scoreColor := ui.StyleSuccess // High relevance (green)
+			scoreLabel := "●"
+			if skill.Score < 0.7 {
+				scoreColor = ui.StyleWarning // Medium relevance (yellow)
+			}
+			if skill.Score < 0.4 {
+				scoreColor = ui.StyleMuted // Low relevance (gray)
+			}
+			scoreText := scoreColor.Render(fmt.Sprintf("%s %.2f", scoreLabel, skill.Score))
+			skillBox += " " + scoreText
+		}
+
 		if skill.Description != "" {
 			skillBox += "\n" + ui.StyleMuted.Render("  "+skill.Description)
 		}

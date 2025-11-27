@@ -4,7 +4,7 @@ import { Fetcher, VectorizeIndex, D1Database, R2Bucket } from "@cloudflare/worke
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { drizzle } from "drizzle-orm/d1";
-import { skills, versions, user } from "../db/src/schema";
+import { skills, versions, user, tags, skillTags } from "../db/src/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { createAuth } from "./auth";
 import { createRedisClient, Ratelimit } from "./lib";
@@ -42,7 +42,7 @@ app.use("*", logger());
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:5173", "https://skillz.lat", "https://skillz.dev"], // Adjust as needed
+    origin: ["http://localhost:5173", "https://api.skillz.lat"], // Adjust as needed
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
@@ -203,7 +203,26 @@ app.post("/api/dev/backfill", async (c) => {
 
     for (const skill of allSkills) {
       try {
-        await indexSkill({ id: skill.id, name: skill.name, description: skill.description }, c.env);
+        // Fetch tags for this skill
+        const skillTagsData = await db
+          .select({ slug: tags.slug })
+          .from(skillTags)
+          .innerJoin(tags, eq(skillTags.tagId, tags.id))
+          .where(eq(skillTags.skillId, skill.id));
+
+        const tagSlugs = skillTagsData.map((t) => t.slug);
+
+        await indexSkill(
+          {
+            id: skill.id,
+            name: skill.name,
+            description: skill.description,
+            tags: tagSlugs,
+            license: skill.license,
+            author: skill.author,
+          },
+          c.env,
+        );
         count++;
       } catch (e) {
         console.error(`Failed to index ${skill.name}:`, e);
@@ -307,12 +326,19 @@ api.get("/skills", async (c) => {
   const query = c.req.query("q");
   const limit = Number(c.req.query("limit") || "20");
   const offset = Number(c.req.query("offset") || "0");
+  
+  // Get filter parameters
+  const author = c.req.query("author");
+  const license = c.req.query("license");
+  const tagsParam = c.req.query("tags");
+  const tags = tagsParam ? tagsParam.split(",").map((t) => t.trim()) : undefined;
 
   try {
     let allSkills;
     if (query) {
-      // Search by name or description using hybrid search
-      const results = await searchSkills(query, c.env, limit);
+      // Search by name or description using hybrid search with filters
+      const filters = author || license || tags ? { author, license, tags } : undefined;
+      const results = await searchSkills(query, c.env, limit, filters);
       allSkills = results;
     } else {
       allSkills = await db.select().from(skills).orderBy(desc(skills.createdAt)).limit(limit).offset(offset);
@@ -566,6 +592,44 @@ api.get("/users/:username", async (c) => {
     console.error("Failed to fetch user:", error);
     const message = c.env.ENVIRONMENT === "development" ? String(error) : "Internal Server Error";
     return c.json({ error: "Failed to fetch user", details: message }, 500);
+  }
+});
+
+// Tags endpoint
+api.get("/tags", async (c) => {
+  const db = drizzle(c.env.DB);
+
+  try {
+    // Get all tags with usage counts
+    const allTags = await db
+      .select({
+        id: tags.id,
+        name: tags.name,
+        slug: tags.slug,
+        description: tags.description,
+      })
+      .from(tags)
+      .orderBy(tags.name);
+
+    // Get usage counts for each tag
+    const tagsWithCounts = await Promise.all(
+      allTags.map(async (tag) => {
+        const count = await db
+          .select({ count: skillTags.skillId })
+          .from(skillTags)
+          .where(eq(skillTags.tagId, tag.id));
+        return {
+          ...tag,
+          skillCount: count.length,
+        };
+      }),
+    );
+
+    return c.json({ tags: tagsWithCounts });
+  } catch (error) {
+    console.error("Failed to fetch tags:", error);
+    const message = c.env.ENVIRONMENT === "development" ? String(error) : "Internal Server Error";
+    return c.json({ error: "Failed to fetch tags", details: message }, 500);
   }
 });
 

@@ -178,13 +178,38 @@ export const downloads = sqliteTable("downloads", {
   date: text("date").notNull(),
 });
 
-export const tags = sqliteTable("tags", {
-  id: integer("id").primaryKey(),
-  skillId: integer("skill_id")
-    .notNull()
-    .references(() => skills.id),
-  tag: text("tag").notNull(),
-});
+export const tags = sqliteTable(
+  "tags",
+  {
+    id: integer("id").primaryKey(),
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
+    description: text("description"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (t) => ({
+    slugIndex: uniqueIndex("tag_slug_index").on(t.slug),
+  }),
+);
+
+export const skillTags = sqliteTable(
+  "skill_tags",
+  {
+    skillId: integer("skill_id")
+      .notNull()
+      .references(() => skills.id, { onDelete: "cascade" }),
+    tagId: integer("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: uniqueIndex("skill_tags_pk").on(t.skillId, t.tagId),
+    skillIndex: index("skill_tags_skill_idx").on(t.skillId),
+    tagIndex: index("skill_tags_tag_idx").on(t.tagId),
+  }),
+);
 
 export const ratings = sqliteTable("ratings", {
   id: integer("id").primaryKey(),

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -68,6 +69,7 @@ type SkillMeta struct {
 	License     *string `json:"license"`
 	CreatedAt   string  `json:"createdAt"`
 	UpdatedAt   string  `json:"updatedAt"`
+	Score       float64 `json:"score,omitempty"` // Relevance score from vector search
 }
 
 type VersionMeta struct {
@@ -104,10 +106,26 @@ type SearchResult struct {
 	Total  int         `json:"total"`
 }
 
-func (c *Client) SearchSkills(query string) (*SearchResult, error) {
+func (c *Client) SearchSkills(query, author, license, tags string) (*SearchResult, error) {
 	url := fmt.Sprintf("%s/skills", c.BaseURL)
+
+	// Build query string with filters
+	params := []string{}
 	if query != "" {
-		url = fmt.Sprintf("%s?q=%s", url, query)
+		params = append(params, "q="+query)
+	}
+	if author != "" {
+		params = append(params, "author="+author)
+	}
+	if license != "" {
+		params = append(params, "license="+license)
+	}
+	if tags != "" {
+		params = append(params, "tags="+tags)
+	}
+
+	if len(params) > 0 {
+		url = url + "?" + strings.Join(params, "&")
 	}
 
 	resp, err := c.HTTPClient.Get(url)

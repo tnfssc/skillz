@@ -12,6 +12,14 @@ export interface Skill {
   updatedAt: Date | string;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: Date | string;
+}
+
 export interface SkillVersion {
   id: number;
   skillId: number;

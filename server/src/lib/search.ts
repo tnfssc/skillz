@@ -14,6 +14,11 @@ export async function searchSkills(
   query: string,
   env: { AI: Fetcher; VECTORIZE: VectorizeIndex; DB: D1Database },
   limit: number = 20,
+  filters?: {
+    author?: string;
+    license?: string;
+    tags?: string[];
+  },
 ): Promise<SearchResult[]> {
   // 1. Generate embedding for the query
   const ai = new Ai(env.AI);
@@ -21,25 +26,49 @@ export async function searchSkills(
 
   // 2. Search Vectorize for semantic matches
   const vectorResults = await env.VECTORIZE.query(queryVector, {
-    topK: limit,
+    topK: limit * 2, // Get more results for filtering
     returnMetadata: true,
   });
 
   // 3. Search D1 for keyword matches (fallback/hybrid)
   const db = drizzle(env.DB);
-  const keywordResults = await db
-    .select()
-    .from(skills)
-    .where(or(like(skills.name, `%${query}%`), like(skills.description, `%${query}%`)))
-    .limit(limit);
+
+  // Build where clause based on filters
+  const conditions = or(like(skills.name, `%${query}%`), like(skills.description, `%${query}%`));
+
+  const keywordResults = await db.select().from(skills).where(conditions).limit(limit);
 
   // 4. Merge and rank results
   const resultsMap = new Map<number, SearchResult>();
 
-  // Process vector results
+  // Process vector results with metadata filtering
   for (const match of vectorResults.matches) {
     const skillId = Number(match.metadata?.skillId);
     if (!skillId) continue;
+
+    // Apply filters on metadata
+    if (filters) {
+      const metadata = match.metadata;
+
+      // Filter by author
+      if (filters.author && metadata?.author !== filters.author) {
+        continue;
+      }
+
+      // Filter by license
+      if (filters.license && metadata?.license !== filters.license) {
+        continue;
+      }
+
+      // Filter by tags (skill must have at least one of the requested tags)
+      if (filters.tags && filters.tags.length > 0) {
+        const skillTags = (metadata?.tags as string[]) || [];
+        const hasMatchingTag = filters.tags.some((tag) => skillTags.includes(tag));
+        if (!hasMatchingTag) {
+          continue;
+        }
+      }
+    }
 
     // We need to fetch the full skill details for these IDs later
     resultsMap.set(skillId, {
@@ -89,11 +118,24 @@ export async function searchSkills(
 }
 
 export async function indexSkill(
-  skill: { id: number; name: string; description: string | null },
+  skill: {
+    id: number;
+    name: string;
+    description: string | null;
+    tags?: string[];
+    license?: string | null;
+    author?: string;
+  },
   env: { AI: Fetcher; VECTORIZE: VectorizeIndex },
 ) {
   const ai = new Ai(env.AI);
-  const text = `${skill.name}: ${skill.description || ""}`;
+
+  // Create rich text for embedding including tags, license, and author context
+  const tagText = skill.tags && skill.tags.length > 0 ? ` Tags: ${skill.tags.join(", ")}` : "";
+  const licenseText = skill.license ? ` License: ${skill.license}` : "";
+  const authorText = skill.author ? ` By ${skill.author}` : "";
+
+  const text = `${skill.name}: ${skill.description || ""}${tagText}${licenseText}${authorText}`;
   const vector = await generateEmbedding(ai, text);
 
   await env.VECTORIZE.insert([
@@ -103,6 +145,9 @@ export async function indexSkill(
       metadata: {
         skillId: skill.id,
         name: skill.name,
+        tags: skill.tags || [],
+        license: skill.license || "",
+        author: skill.author || "",
       },
     },
   ]);
