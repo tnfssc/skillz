@@ -4,6 +4,7 @@ PRAGMA foreign_keys = OFF;
 -- Clean up existing data
 DELETE FROM downloads;
 DELETE FROM ratings;
+DELETE FROM skill_tags;
 DELETE FROM tags;
 DELETE FROM versions;
 DELETE FROM skills;
@@ -36,12 +37,27 @@ INSERT INTO versions (id, skill_id, version, description, tarball_url, integrity
 (8, 5, '1.0.0', 'Initial release', 'https://registry.skillz.dev/tarballs/translator-pro-1.0.0.tgz', 'sha256-hash8', '{"name": "translator-pro", "version": "1.0.0"}', 1700500000);
 
 -- Tags
-INSERT INTO tags (skill_id, tag) VALUES
-(1, 'data'), (1, 'visualization'), (1, 'analysis'),
-(2, 'dev-tool'), (2, 'formatting'),
-(3, 'weather'), (3, 'news'),
-(4, 'ai'), (4, 'image'), (4, 'generation'),
-(5, 'translation'), (5, 'language');
+INSERT INTO tags (id, name, slug, created_at) VALUES
+(1, 'data', 'data', 1700000000),
+(2, 'visualization', 'visualization', 1700000000),
+(3, 'analysis', 'analysis', 1700000000),
+(4, 'dev-tool', 'dev-tool', 1700000000),
+(5, 'formatting', 'formatting', 1700000000),
+(6, 'weather', 'weather', 1700000000),
+(7, 'news', 'news', 1700000000),
+(8, 'ai', 'ai', 1700000000),
+(9, 'image', 'image', 1700000000),
+(10, 'generation', 'generation', 1700000000),
+(11, 'translation', 'translation', 1700000000),
+(12, 'language', 'language', 1700000000);
+
+-- Skill Tags
+INSERT INTO skill_tags (skill_id, tag_id) VALUES
+(1, 1), (1, 2), (1, 3),
+(2, 4), (2, 5),
+(3, 6), (3, 7),
+(4, 8), (4, 9), (4, 10),
+(5, 11), (5, 12);
 
 -- Ratings
 INSERT INTO ratings (id, skill_id, user_id, rating, review, created_at) VALUES
