@@ -244,6 +244,15 @@ app.post("/api/dev/backfill", async (c) => {
 // API v1 routes
 const api = new Hono<{ Bindings: Bindings }>();
 
+// Health check endpoint (no auth, no rate limiting)
+api.get("/health", (c) => {
+  return c.json({ 
+    status: "ok",
+    service: "skillz-registry",
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Middleware to check auth - supports both session (web) and API keys (CLI)
 const authMiddleware = async (c: Context<{ Bindings: Bindings; Variables: Variables }>, next: () => Promise<void>) => {
   const auth = createAuth(c.env);
